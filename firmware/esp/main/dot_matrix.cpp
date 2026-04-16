@@ -2,21 +2,46 @@
 
 #define TAG "dot_matrix"
 
+gpio_num_t allPins[ROWS + COLS] = {
+    // Top
+    GPIO_NUM_13, // col 8
+    GPIO_NUM_12, // col 7
+    GPIO_NUM_14, // row 2
+    GPIO_NUM_27, // col 1
+    GPIO_NUM_26, // row 4
+    GPIO_NUM_25, // col 6
+    GPIO_NUM_33, // col 4
+    GPIO_NUM_32, // row 1
+    // Bottom (with label, 1588AS)
+    GPIO_NUM_15, // row 5
+    GPIO_NUM_21, // row 7
+    GPIO_NUM_4,  // col 2
+    GPIO_NUM_16, // col 3
+    GPIO_NUM_17, // row 8
+    GPIO_NUM_5,  // col 5
+    GPIO_NUM_18, // row 6
+    GPIO_NUM_19  // row 3
+};
+
+// Run scanMatrix to figure these out
+gpio_num_t rowPins[ROWS] = {GPIO_NUM_32, GPIO_NUM_14, GPIO_NUM_19, GPIO_NUM_26, GPIO_NUM_15, GPIO_NUM_18, GPIO_NUM_21, GPIO_NUM_17};
+gpio_num_t colPins[COLS] = {GPIO_NUM_27, GPIO_NUM_4, GPIO_NUM_16, GPIO_NUM_33, GPIO_NUM_5, GPIO_NUM_25, GPIO_NUM_12, GPIO_NUM_13};
+
 extern "C"
 {
-    void initMatrix(gpio_num_t allPins[ROWS + COLS], uint8_t state = 0)
+    void initMatrix(uint8_t state = 0)
     {
-        for (int i = 0; i < ROWS + COLS; i++)
+        for (uint8_t i = 0; i < ROWS + COLS; i++)
         {
             gpio_set_direction(allPins[i], GPIO_MODE_OUTPUT);
             gpio_set_level(allPins[i], state);
         }
     }
 
-    void scanMatrix(gpio_num_t allPins[ROWS + COLS])
+    void scanMatrix()
     {
         // Round 1: Set all pins low then trigger individual pins high
-        initMatrix(allPins);
+        initMatrix();
         for (int i = 0; i < ROWS + COLS; i++)
         {
             gpio_set_level(allPins[i], 1);
@@ -34,7 +59,7 @@ extern "C"
         vTaskDelay(10 * 1000 / portTICK_PERIOD_MS);
 
         // Round 2: Set all pins high then trigger individual pins low
-        initMatrix(allPins, 1);
+        initMatrix(1);
         for (int i = 0; i < ROWS + COLS; i++)
         {
             gpio_set_level(allPins[i], 0);
@@ -44,6 +69,47 @@ extern "C"
             vTaskDelay(7 * 1000 / portTICK_PERIOD_MS);
 
             gpio_set_level(allPins[i], 1);
+        }
+    }
+
+    void activateCell(uint8_t row, uint8_t col)
+    {
+        // activate specified row
+        for (uint8_t r = 0; r < ROWS; r++)
+        {
+            if (r == row)
+            {
+                gpio_set_level(rowPins[r], 0);
+            }
+            else
+            {
+                gpio_set_level(rowPins[r], 1);
+            }
+        }
+
+        // activate specified column
+        for (uint8_t c = 0; c < COLS; c++)
+        {
+            if (c == col)
+            {
+                gpio_set_level(colPins[c], 1);
+            }
+            else
+            {
+                gpio_set_level(colPins[c], 0);
+            }
+        }
+    }
+
+    void testMatrixCoordinates()
+    {
+        for (int r = 0; r < ROWS; r++)
+        {
+            for (int c = 0; c < COLS; c++)
+            {
+                activateCell(r, c);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
+            }
         }
     }
 }

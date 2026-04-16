@@ -15,8 +15,9 @@ extern "C"
 {
 #endif
 
-    void initMatrix(gpio_num_t allPins[ROWS + COLS], uint8_t state);
-    void scanMatrix(gpio_num_t allPins[ROWS + COLS]);
+    void initMatrix(uint8_t state);
+    void scanMatrix();
+    void testMatrixCoordinates();
 
 #ifdef __cplusplus
 }
