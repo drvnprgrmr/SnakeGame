@@ -1,5 +1,5 @@
 #pragma once
-
+#include <stdio.h>
 #include <driver/gpio.h>
 #include <esp_timer.h>
 #include <esp_log.h>
@@ -30,6 +30,8 @@ extern "C"
     void initMatrixPins(uint8_t state);
     void resetMatrix();
     void scanMatrix();
+    void printMatrix();
+    void offLights();
     void drawMatrix();
     void testMatrixCoordinates();
     void updateCell(Cell *cell, bool status);

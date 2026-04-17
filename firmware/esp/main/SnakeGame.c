@@ -21,15 +21,15 @@ uint8_t currentDownRowLimit = ROWS - 1;
 const uint8_t MinLeftCol = 0;
 uint8_t currentLeftColLimit = 0;
 
-const uint8_t MinUpRow = 0;
-uint8_t currentUpRowLimit = 0;
+const uint8_t MinUpRow = 1;
+uint8_t currentUpRowLimit = 1;
 
 Direction currentDirection = RIGHT;
 Cell loadScreenUpdatePointer = {0, 0};
 bool cellStatusValue = true;
 
 int64_t loadScreenTimer = 0;
-const int64_t loadScreenInterval = 350 * 1000; // 100ms
+const int64_t loadScreenInterval = 400 * 1000; // 100ms
 
 void resetSnakeLoadScreen()
 {
@@ -53,10 +53,10 @@ void updateSnakeLoadScreen()
 
         if (currentDirection == RIGHT)
         {
-            if (loadScreenUpdatePointer.c < currentRightColLimit)
+            if (loadScreenUpdatePointer.c < currentRightColLimit )
             {
-                updateCell(&loadScreenUpdatePointer, cellStatusValue);
                 loadScreenUpdatePointer.c++;
+                updateCell(&loadScreenUpdatePointer, cellStatusValue);
             }
             else
             {
@@ -151,16 +151,16 @@ void updateSnakeLoadScreen()
 
 void app_main(void)
 {
-    esp_log_level_set(TAG, ESP_LOG_DEBUG);
+    esp_log_level_set("*", ESP_LOG_DEBUG);
 
-    initMatrixPins(1);
-    // testMatrixCoordinates();
+    initMatrixPins(0);
+    testMatrixCoordinates();
 
-    // resetMatrix();
-    // drawMatrix();
+    resetMatrix();
+    drawMatrix();
+
     // ESP_LOGD("main", );
     // vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
-
 
     // gpio_set_level(rowPins[1], 0);
     // vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
@@ -170,8 +170,10 @@ void app_main(void)
 
     while (true)
     {
+        printMatrix();
         drawMatrix();
+        // offLights();
         updateSnakeLoadScreen();
-        vTaskDelay(1 / portTICK_PERIOD_MS);
+        vTaskDelay(100);
     }
 }
