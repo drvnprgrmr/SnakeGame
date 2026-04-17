@@ -29,7 +29,7 @@ Cell loadScreenUpdatePointer = {0, 0};
 bool cellStatusValue = true;
 
 int64_t loadScreenTimer = 0;
-const int64_t loadScreenInterval = 250 * 1000; // 100ms
+const int64_t loadScreenInterval = 350 * 1000; // 100ms
 
 void resetSnakeLoadScreen()
 {
@@ -159,19 +159,19 @@ void app_main(void)
     // resetMatrix();
     // drawMatrix();
     // ESP_LOGD("main", );
-    vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
+    // vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
 
 
-    gpio_set_level(rowPins[1], 0);
-    vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
-    gpio_set_level(colPins[0], 0);
-    gpio_set_level(colPins[1], 0);
-    gpio_set_level(colPins[7], 0);
+    // gpio_set_level(rowPins[1], 0);
+    // vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
+    // gpio_set_level(colPins[0], 0);
+    // gpio_set_level(colPins[1], 0);
+    // gpio_set_level(colPins[7], 0);
 
-    // while (true)
-    // {
-    //     drawMatrix();
-    //     updateSnakeLoadScreen();
-    //     vTaskDelay(1 / portTICK_PERIOD_MS);
-    // }
+    while (true)
+    {
+        drawMatrix();
+        updateSnakeLoadScreen();
+        vTaskDelay(1 / portTICK_PERIOD_MS);
+    }
 }

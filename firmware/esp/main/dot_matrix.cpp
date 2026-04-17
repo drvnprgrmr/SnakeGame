@@ -101,13 +101,16 @@ void displayCell(uint8_t row, uint8_t col)
     }
 }
 
+int64_t timer = 0;
 void testMatrixCoordinates()
 {
-    for (int r = 0; r < ROWS; r++)
+    for (uint8_t r = 0; r < ROWS; r++)
     {
-        for (int c = 0; c < COLS; c++)
+        for (uint8_t c = 0; c < COLS; c++)
         {
-            displayCell(r, c);
+            Cell cell = {r, c};
+            updateCell(&cell, true);
+            drawMatrix();
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
     }
@@ -142,13 +145,21 @@ void drawMatrix()
 {
     for (int r = 0; r < ROWS; r++)
     {
+        gpio_set_level(rowPins[r], 0);
+
         for (int c = 0; c < COLS; c++)
         {
             // turn on specific cell if it's activated
             if (matrix[r][c])
             {
-                displayCell(r, c);
+                gpio_set_level(colPins[c], 1);
+            }
+            else
+            {
+                gpio_set_level(colPins[c], 0);
             }
         }
+        vTaskDelay(2);
+        gpio_set_level(rowPins[r], 1);
     }
 }
