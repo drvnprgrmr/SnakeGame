@@ -10,11 +10,17 @@
 #define ROWS 8
 #define COLS 8
 
-struct Cell
+extern gpio_num_t allPins[ROWS + COLS];
+
+extern gpio_num_t rowPins[ROWS];
+extern gpio_num_t colPins[COLS];
+
+
+typedef struct
 {
     uint8_t r;
     uint8_t c;
-};
+} Cell;
 
 #ifdef __cplusplus
 extern "C"
@@ -24,6 +30,7 @@ extern "C"
     void initMatrixPins(uint8_t state);
     void resetMatrix();
     void scanMatrix();
+    void drawMatrix();
     void testMatrixCoordinates();
     void updateCell(Cell *cell, bool status);
     void updateCells(Cell *cells, uint8_t numCells, bool status);
