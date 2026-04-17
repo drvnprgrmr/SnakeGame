@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "dot_matrix.h"
 
 #define TAG "snake"
@@ -29,7 +28,7 @@ Cell loadScreenUpdatePointer = {0, 0};
 bool cellStatusValue = true;
 
 int64_t loadScreenTimer = 0;
-const int64_t loadScreenInterval = 400 * 1000; // 100ms
+const int64_t loadScreenInterval = 200 * 1000; // 100ms
 
 void resetSnakeLoadScreen()
 {
@@ -53,7 +52,7 @@ void updateSnakeLoadScreen()
 
         if (currentDirection == RIGHT)
         {
-            if (loadScreenUpdatePointer.c < currentRightColLimit )
+            if (loadScreenUpdatePointer.c < currentRightColLimit)
             {
                 loadScreenUpdatePointer.c++;
                 updateCell(&loadScreenUpdatePointer, cellStatusValue);
@@ -170,10 +169,10 @@ void app_main(void)
 
     while (true)
     {
-        printMatrix();
+        // printMatrix();
         drawMatrix();
         // offLights();
         updateSnakeLoadScreen();
-        vTaskDelay(100);
+        vTaskDelay(1);
     }
 }

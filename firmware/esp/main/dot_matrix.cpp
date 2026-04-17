@@ -114,7 +114,7 @@ void testMatrixCoordinates()
 
             displayCell(r, c);
 
-            vTaskDelay(100 / portTICK_PERIOD_MS);
+            vTaskDelay(50 / portTICK_PERIOD_MS);
         }
     }
 
@@ -175,23 +175,50 @@ void drawMatrix()
 {
     for (int r = 0; r < ROWS; r++)
     {
-        // gpio_set_level(rowPins[r], 0);
+        gpio_set_level(rowPins[r], 0);
 
         for (int c = 0; c < COLS; c++)
         {
+            // turn on specific cell if it's activated
             if (matrix[r][c])
-                displayCell(r, c);
-
-            // // turn on specific cell if it's activated
-            // if (matrix[r][c])
-            // {
-            //     gpio_set_level(colPins[c], 1);
-            // }
-            // else
-            // {
-            //     gpio_set_level(colPins[c], 0);
-            // }
+            {
+                gpio_set_level(colPins[c], 1);
+            }
+            else
+            {
+                gpio_set_level(colPins[c], 0);
+            }
         }
-        // gpio_set_level(rowPins[r], 1);
+        
+        ets_delay_us(500); // might need to update to non-blocking solution later when adding wifi
+        gpio_set_level(rowPins[r], 1);
     }
 }
+
+// void drawMatrix()
+// {
+//     for (int r = 0; r < ROWS; r++)
+//     {
+//         // gpio_set_level(rowPins[r], 0);
+
+//         for (int c = 0; c < COLS; c++)
+//         {
+//             if (matrix[r][c]) {
+//                 displayCell(r, c);
+//             }
+
+//             vTaskDelay(3);
+
+//             // // turn on specific cell if it's activated
+//             // if (matrix[r][c])
+//             // {
+//             //     gpio_set_level(colPins[c], 1);
+//             // }
+//             // else
+//             // {
+//             //     gpio_set_level(colPins[c], 0);
+//             // }
+//         }
+//         // gpio_set_level(rowPins[r], 1);
+//     }
+// }
