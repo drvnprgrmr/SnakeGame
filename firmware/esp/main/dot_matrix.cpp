@@ -27,88 +27,127 @@ gpio_num_t allPins[ROWS + COLS] = {
 gpio_num_t rowPins[ROWS] = {GPIO_NUM_32, GPIO_NUM_14, GPIO_NUM_19, GPIO_NUM_26, GPIO_NUM_15, GPIO_NUM_18, GPIO_NUM_21, GPIO_NUM_17};
 gpio_num_t colPins[COLS] = {GPIO_NUM_27, GPIO_NUM_4, GPIO_NUM_16, GPIO_NUM_33, GPIO_NUM_5, GPIO_NUM_25, GPIO_NUM_12, GPIO_NUM_13};
 
-extern "C"
+bool matrix[ROWS][COLS];
+
+void initMatrixPins(uint8_t state = 0)
 {
-    void initMatrix(uint8_t state = 0)
+    for (uint8_t i = 0; i < ROWS + COLS; i++)
     {
-        for (uint8_t i = 0; i < ROWS + COLS; i++)
+        gpio_set_direction(allPins[i], GPIO_MODE_OUTPUT);
+        gpio_set_level(allPins[i], state);
+    }
+}
+
+void scanMatrix()
+{
+    // Round 1: Set all pins low then trigger individual pins high
+    initMatrixPins();
+    for (int i = 0; i < ROWS + COLS; i++)
+    {
+        gpio_set_level(allPins[i], 1);
+        ESP_LOGI(TAG, "Round 1. Pin #%i\n", i + 1);
+
+        // user should use this time to read the appropriate row
+        vTaskDelay(7 * 1000 / portTICK_PERIOD_MS);
+
+        gpio_set_level(allPins[i], 0);
+    }
+
+    ESP_LOGI(TAG, "\nRound 2 starting soon.\n");
+
+    // add longer delay between stages
+    vTaskDelay(10 * 1000 / portTICK_PERIOD_MS);
+
+    // Round 2: Set all pins high then trigger individual pins low
+    initMatrixPins(1);
+    for (int i = 0; i < ROWS + COLS; i++)
+    {
+        gpio_set_level(allPins[i], 0);
+        ESP_LOGI(TAG, "Round 2. Pin #%i\n", i + 1);
+
+        // user should use this time to read the appropriate col
+        vTaskDelay(7 * 1000 / portTICK_PERIOD_MS);
+
+        gpio_set_level(allPins[i], 1);
+    }
+}
+
+void displayCell(uint8_t row, uint8_t col)
+{
+    // activate specified row
+    for (uint8_t r = 0; r < ROWS; r++)
+    {
+        if (r == row)
         {
-            gpio_set_direction(allPins[i], GPIO_MODE_OUTPUT);
-            gpio_set_level(allPins[i], state);
+            gpio_set_level(rowPins[r], 0);
+        }
+        else
+        {
+            gpio_set_level(rowPins[r], 1);
         }
     }
 
-    void scanMatrix()
+    // activate specified column
+    for (uint8_t c = 0; c < COLS; c++)
     {
-        // Round 1: Set all pins low then trigger individual pins high
-        initMatrix();
-        for (int i = 0; i < ROWS + COLS; i++)
+        if (c == col)
         {
-            gpio_set_level(allPins[i], 1);
-            ESP_LOGI(TAG, "Round 1. Pin #%i\n", i + 1);
-
-            // user should use this time to read the appropriate row
-            vTaskDelay(7 * 1000 / portTICK_PERIOD_MS);
-
-            gpio_set_level(allPins[i], 0);
+            gpio_set_level(colPins[c], 1);
         }
-
-        ESP_LOGI(TAG, "\nRound 2 starting soon.\n");
-
-        // add longer delay between stages
-        vTaskDelay(10 * 1000 / portTICK_PERIOD_MS);
-
-        // Round 2: Set all pins high then trigger individual pins low
-        initMatrix(1);
-        for (int i = 0; i < ROWS + COLS; i++)
+        else
         {
-            gpio_set_level(allPins[i], 0);
-            ESP_LOGI(TAG, "Round 2. Pin #%i\n", i + 1);
-
-            // user should use this time to read the appropriate col
-            vTaskDelay(7 * 1000 / portTICK_PERIOD_MS);
-
-            gpio_set_level(allPins[i], 1);
+            gpio_set_level(colPins[c], 0);
         }
     }
+}
 
-    void activateCell(uint8_t row, uint8_t col)
+void testMatrixCoordinates()
+{
+    for (int r = 0; r < ROWS; r++)
     {
-        // activate specified row
-        for (uint8_t r = 0; r < ROWS; r++)
+        for (int c = 0; c < COLS; c++)
         {
-            if (r == row)
-            {
-                gpio_set_level(rowPins[r], 0);
-            }
-            else
-            {
-                gpio_set_level(rowPins[r], 1);
-            }
-        }
-
-        // activate specified column
-        for (uint8_t c = 0; c < COLS; c++)
-        {
-            if (c == col)
-            {
-                gpio_set_level(colPins[c], 1);
-            }
-            else
-            {
-                gpio_set_level(colPins[c], 0);
-            }
+            displayCell(r, c);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
         }
     }
+}
 
-    void testMatrixCoordinates()
+void resetMatrix()
+{
+    for (int r = 0; r < ROWS; r++)
     {
-        for (int r = 0; r < ROWS; r++)
+        for (int c = 0; c < COLS; c++)
         {
-            for (int c = 0; c < COLS; c++)
+            // set all matrix cells to off
+            matrix[r][c] = false;
+        }
+    }
+}
+
+void updateCell(Cell *cell, bool status)
+{
+    matrix[cell->r][cell->c] = status;
+};
+
+void updateCells(Cell *cells, uint8_t numCells, bool status)
+{
+    for (int i = 0; i < numCells; i++)
+    {
+        updateCell(&cells[i], status);
+    }
+}
+
+void drawMatrix()
+{
+    for (int r = 0; r < ROWS; r++)
+    {
+        for (int c = 0; c < COLS; c++)
+        {
+            // turn on specific cell if it's activated
+            if (matrix[r][c])
             {
-                activateCell(r, c);
-                vTaskDelay(100 / portTICK_PERIOD_MS);
+                displayCell(r, c);
             }
         }
     }
