@@ -108,13 +108,9 @@ void testMatrixCoordinates()
     {
         for (uint8_t c = 0; c < COLS; c++)
         {
-            // Cell cell = {r, c};
-            // updateCell(&cell, true);
-            // drawMatrix();
-
             displayCell(r, c);
 
-            vTaskDelay(50 / portTICK_PERIOD_MS);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
         }
     }
 
@@ -194,31 +190,3 @@ void drawMatrix()
         gpio_set_level(rowPins[r], 1);
     }
 }
-
-// void drawMatrix()
-// {
-//     for (int r = 0; r < ROWS; r++)
-//     {
-//         // gpio_set_level(rowPins[r], 0);
-
-//         for (int c = 0; c < COLS; c++)
-//         {
-//             if (matrix[r][c]) {
-//                 displayCell(r, c);
-//             }
-
-//             vTaskDelay(3);
-
-//             // // turn on specific cell if it's activated
-//             // if (matrix[r][c])
-//             // {
-//             //     gpio_set_level(colPins[c], 1);
-//             // }
-//             // else
-//             // {
-//             //     gpio_set_level(colPins[c], 0);
-//             // }
-//         }
-//         // gpio_set_level(rowPins[r], 1);
-//     }
-// }

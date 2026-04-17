@@ -28,7 +28,7 @@ Cell loadScreenUpdatePointer = {0, 0};
 bool cellStatusValue = true;
 
 int64_t loadScreenTimer = 0;
-const int64_t loadScreenInterval = 200 * 1000; // 100ms
+const int64_t loadScreenInterval = 70 * 1000; // 70ms
 
 void resetSnakeLoadScreen()
 {
@@ -60,7 +60,7 @@ void updateSnakeLoadScreen()
             else
             {
                 // Check if there's somewhere to turn to
-                if (loadScreenUpdatePointer.r + 1 >= currentDownRowLimit)
+                if (loadScreenUpdatePointer.r >= currentDownRowLimit)
                 {
                     // if not, reset
                     resetSnakeLoadScreen();
@@ -85,7 +85,7 @@ void updateSnakeLoadScreen()
             }
             else
             {
-                if (loadScreenUpdatePointer.c - 1 <= currentLeftColLimit)
+                if (loadScreenUpdatePointer.c <= currentLeftColLimit)
                 {
                     resetSnakeLoadScreen();
                 }
@@ -108,7 +108,7 @@ void updateSnakeLoadScreen()
             }
             else
             {
-                if (loadScreenUpdatePointer.r - 1 <= currentUpRowLimit)
+                if (loadScreenUpdatePointer.r <= currentUpRowLimit)
                 {
                     resetSnakeLoadScreen();
                 }
@@ -131,7 +131,7 @@ void updateSnakeLoadScreen()
             }
             else
             {
-                if (loadScreenUpdatePointer.c + 1 >= currentRightColLimit)
+                if (loadScreenUpdatePointer.c >= currentRightColLimit)
                 {
                     resetSnakeLoadScreen();
                 }
@@ -157,15 +157,6 @@ void app_main(void)
 
     resetMatrix();
     drawMatrix();
-
-    // ESP_LOGD("main", );
-    // vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
-
-    // gpio_set_level(rowPins[1], 0);
-    // vTaskDelay(5 * 1000 / portTICK_PERIOD_MS);
-    // gpio_set_level(colPins[0], 0);
-    // gpio_set_level(colPins[1], 0);
-    // gpio_set_level(colPins[7], 0);
 
     while (true)
     {
