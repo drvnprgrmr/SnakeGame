@@ -1,3 +1,5 @@
+#include <esp_random.h>
+
 #include "dot_matrix.h"
 
 #define TAG "snake"
@@ -11,7 +13,14 @@ typedef enum
     UP,
 } Direction;
 
-// Load Screen
+typedef enum
+{
+    LOAD_SCREEN,
+    GAMEPLAY,
+    PAUSE
+} GameState;
+
+/* ------------------------------- Load Screen ------------------------------ */
 bool drawLoadScreen = false;
 const uint8_t MaxRightCol = COLS - 1;
 uint8_t currentRightColLimit = COLS - 1;
@@ -161,21 +170,23 @@ void updateLoadScreen()
         }
     }
 }
-// Load Screen
+/* -------------------------------------------------------------------------- */
 
 /* -------------------------- Snake and Food Logic -------------------------- */
 bool drawSnake = true;
-Cell snake[MAX_SNAKE_LENGTH] = {{1, 2}, {0,2}, {0,1}};
+Cell snake[MAX_SNAKE_LENGTH] = {{1, 2}, {0, 2}, {0, 1}};
 uint8_t snakeLength = 3;
 Direction snakeDirection = RIGHT;
 int64_t snakeUpdateTimer = 0;
-const int64_t snakeUpdateInterval = 2000 * 1000;
+const int64_t snakeUpdateInterval = 500 * 1000;
 
 Cell food;
 
-void printSnake() {
+void printSnake()
+{
     printf("Snake: ");
-    for (int i = 0; i < snakeLength; i++) {
+    for (int i = 0; i < snakeLength; i++)
+    {
         printf("(%i,%i) ", snake[i].r, snake[i].c);
     }
     printf("\n");
@@ -185,7 +196,7 @@ void updateSnake()
 {
     if (esp_timer_get_time() - snakeUpdateTimer >= snakeUpdateInterval)
     {
-        printSnake();
+        // printSnake();
         snakeUpdateTimer = esp_timer_get_time();
 
         // store previous head position
@@ -208,11 +219,106 @@ void updateSnake()
         }
         break;
 
+        case DOWN:
+        {
+            // move head down
+            snake[0].r = (previousHead.r + 1) % ROWS;
+        }
+        break;
+        case LEFT:
+        {
+            // move head to the left
+            snake[0].c = (previousHead.c - 1) % COLS;
+        }
+        break;
+        case UP:
+        {
+            // move head up
+            snake[0].r = (previousHead.r - 1) % ROWS;
+        }
+        break;
+
+        default:
+            break;
+        }
+
+        clearMatrix();
+        updateCells(snake, snakeLength, 1);
+    }
+}
+
+int64_t randomUpdateTimer = 0;
+static const int64_t randomUpdateInterval = 5 * 1000 * 1000;
+void randomUpdateSnakeDirection()
+{
+    if (esp_timer_get_time() - randomUpdateTimer >= randomUpdateInterval)
+    {
+        randomUpdateTimer = esp_timer_get_time();
+
+        // get random integer
+        int32_t rand = esp_random() % 4; // one of the four directions
+
+        switch (rand)
+        {
+        case RIGHT:
+        {
+            // make sure you can't turn 180deg
+            if (currentDirection == LEFT)
+            {
+                currentDirection = DOWN;
+            }
+            else
+            {
+                currentDirection = rand;
+            }
+        }
+        break;
+        case DOWN:
+        {
+            // make sure you can't turn 180deg
+            if (currentDirection == UP)
+            {
+                currentDirection = LEFT;
+            }
+            else
+            {
+                currentDirection = rand;
+            }
+        }
+        break;
+        case LEFT:
+        {
+            // make sure you can't turn 180deg
+            if (currentDirection == RIGHT)
+            {
+                currentDirection = UP;
+            }
+            else
+            {
+                currentDirection = rand;
+            }
+        }
+        break;
+        case UP:
+        {
+            // make sure you can't turn 180deg
+            if (currentDirection == DOWN)
+            {
+                currentDirection = LEFT;
+            }
+            else
+            {
+                currentDirection = rand;
+            }
+        }
+        break;
+
         default:
             break;
         }
     }
 }
+
 /* -------------------------------------------------------------------------- */
 
 void app_main(void)
@@ -220,10 +326,6 @@ void app_main(void)
     esp_log_level_set("*", ESP_LOG_DEBUG);
 
     initMatrixPins(0);
-    testMatrixCoordinates();
-
-    resetMatrix();
-    drawMatrix();
 
     while (true)
     {
@@ -232,8 +334,10 @@ void app_main(void)
         {
             updateLoadScreen();
         }
-        if (drawSnake) {
+        if (drawSnake)
+        {
             updateSnake();
+            randomUpdateSnakeDirection();
         }
         vTaskDelay(1);
     }

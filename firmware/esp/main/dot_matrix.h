@@ -18,8 +18,8 @@ extern gpio_num_t colPins[COLS];
 
 typedef struct
 {
-    uint8_t r;
-    uint8_t c;
+    int r;
+    int c;
 } Cell;
 
 #ifdef __cplusplus
@@ -28,10 +28,9 @@ extern "C"
 #endif
 
     void initMatrixPins(uint8_t state);
-    void resetMatrix();
+    void clearMatrix();
     void scanMatrix();
     void printMatrix();
-    void offLights();
     void drawMatrix();
     void testMatrixCoordinates();
     void updateCell(Cell *cell, bool status);

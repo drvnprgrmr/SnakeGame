@@ -113,12 +113,9 @@ void testMatrixCoordinates()
             vTaskDelay(100 / portTICK_PERIOD_MS);
         }
     }
-
-    // turn the first led back on
-    displayCell(0, 0);
 }
 
-void resetMatrix()
+void clearMatrix()
 {
     for (int r = 0; r < ROWS; r++)
     {
@@ -129,16 +126,6 @@ void resetMatrix()
         }
     }
 
-    offLights();
-}
-
-void offLights()
-{
-    // turn off all pins
-    for (int i = 0; i < ROWS + COLS; i++)
-    {
-        gpio_set_level(allPins[i], 0);
-    }
 }
 
 void updateCell(Cell *cell, bool status)
