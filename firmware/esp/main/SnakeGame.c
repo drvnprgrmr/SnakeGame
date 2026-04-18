@@ -1,6 +1,7 @@
 #include <esp_random.h>
 
 #include "dot_matrix.h"
+#include "wifi_man.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
@@ -323,9 +324,13 @@ void randomUpdateSnakeDirection()
 
 void app_main(void)
 {
-    esp_log_level_set("*", ESP_LOG_DEBUG);
+    // esp_log_level_set("*", ESP_LOG_DEBUG);
 
     initMatrixPins(0);
+
+    // initialize wifi
+    initNvs();
+    wifi_init_softap();
 
     while (true)
     {
