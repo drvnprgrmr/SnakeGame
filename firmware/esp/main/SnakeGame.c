@@ -2,6 +2,7 @@
 
 #include "dot_matrix.h"
 #include "wifi_man.h"
+#include "http_server.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
@@ -23,17 +24,17 @@ typedef enum
 
 /* ------------------------------- Load Screen ------------------------------ */
 bool drawLoadScreen = false;
-const uint8_t MaxRightCol = COLS - 1;
-uint8_t currentRightColLimit = COLS - 1;
+const int MaxRightCol = COLS - 1;
+int currentRightColLimit = COLS - 1;
 
-const uint8_t MaxDownRow = ROWS - 1;
-uint8_t currentDownRowLimit = ROWS - 1;
+const int MaxDownRow = ROWS - 1;
+int currentDownRowLimit = ROWS - 1;
 
-const uint8_t MinLeftCol = 0;
-uint8_t currentLeftColLimit = 0;
+const int MinLeftCol = 0;
+int currentLeftColLimit = 0;
 
-const uint8_t MinUpRow = 1;
-uint8_t currentUpRowLimit = 1;
+const int MinUpRow = 1;
+int currentUpRowLimit = 1;
 
 Direction currentDirection = RIGHT;
 Cell loadScreenUpdatePointer = {0, 0};
@@ -175,9 +176,9 @@ void updateLoadScreen()
 
 /* -------------------------- Snake and Food Logic -------------------------- */
 bool drawSnake = true;
-Cell snake[MAX_SNAKE_LENGTH] = {{1, 2}, {0, 2}, {0, 1}};
-uint8_t snakeLength = 3;
-Direction snakeDirection = RIGHT;
+Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}};
+int snakeLength = 1;
+Direction snakeDirection = LEFT;
 int64_t snakeUpdateTimer = 0;
 const int64_t snakeUpdateInterval = 500 * 1000;
 
@@ -206,7 +207,7 @@ void updateSnake()
         previousHead.c = snake[0].c;
 
         // shift entire body to the neighbors position
-        for (uint8_t i = snakeLength - 1; i > 0; i--)
+        for (int i = snakeLength - 1; i > 0; i--)
         {
             snake[i].r = snake[i - 1].r, snake[i].c = snake[i - 1].c;
         }
@@ -229,13 +230,13 @@ void updateSnake()
         case LEFT:
         {
             // move head to the left
-            snake[0].c = (previousHead.c - 1) % COLS;
+            snake[0].c = (previousHead.c + COLS - 1) % COLS;
         }
         break;
         case UP:
         {
             // move head up
-            snake[0].r = (previousHead.r - 1) % ROWS;
+            snake[0].r = (previousHead.r + ROWS - 1) % ROWS;
         }
         break;
 
@@ -332,6 +333,9 @@ void app_main(void)
     initNvs();
     wifi_init_softap();
 
+    // start http server
+    httpd_handle_t server = startWebServer();
+
     while (true)
     {
         drawMatrix();
@@ -342,7 +346,7 @@ void app_main(void)
         if (drawSnake)
         {
             updateSnake();
-            randomUpdateSnakeDirection();
+            // randomUpdateSnakeDirection();
         }
         vTaskDelay(1);
     }
