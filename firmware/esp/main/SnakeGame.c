@@ -3,6 +3,7 @@
 #include "dot_matrix.h"
 #include "wifi_man.h"
 #include "http_server.h"
+#include "dns_server.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
@@ -326,6 +327,13 @@ void randomUpdateSnakeDirection()
 void app_main(void)
 {
     // esp_log_level_set("*", ESP_LOG_DEBUG);
+    /*
+        Turn of warnings from HTTP server as redirecting traffic will yield
+        lots of invalid requests
+    */
+    esp_log_level_set("httpd_uri", ESP_LOG_ERROR);
+    esp_log_level_set("httpd_txrx", ESP_LOG_ERROR);
+    esp_log_level_set("httpd_parse", ESP_LOG_ERROR);
 
     initMatrixPins(0);
 
@@ -333,8 +341,16 @@ void app_main(void)
     initNvs();
     wifi_init_softap();
 
+    // Configure DNS-based captive portal
+    dhcp_set_captiveportal_url();
+
     // start http server
-    httpd_handle_t server = startWebServer();
+    httpd_handle_t server = start_webserver();
+    register_softap_uris(server);
+
+    // Start the DNS server that will redirect all queries to the softAP IP
+    dns_server_config_t config = DNS_SERVER_CONFIG_SINGLE("*" /* all A queries */, "WIFI_AP_DEF" /* softAP netif ID */);
+    start_dns_server(&config);
 
     while (true)
     {

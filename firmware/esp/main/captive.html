@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+    <title>SnakeGame Captive Portal</title>
+</head>
+
+<body>
+    <h1>SnakeGame Captive Portal</h1>
+    <p>Use this to configure the network to be connected to on restart</p>
+
+    <div>
+        <form action="/captive" method="post">
+            <div>
+                <span>SSID: </span>
+                <input type="text" name="ssid" id="ssid">
+            </div>
+
+            <div>
+                <span>Password</span>
+                <input type="password" name="password" id="password">
+            </div>
+            
+            <button type="submit">Save and restart</button>
+
+        </form>
+    </div>
+</body>
+
+</html>

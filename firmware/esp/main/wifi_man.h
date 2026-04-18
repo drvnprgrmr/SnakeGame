@@ -11,6 +11,7 @@
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
+#include "lwip/inet.h"
 
 #define AP_SSID "SnakeGame"
 #define AP_PASS "snakesss"
@@ -26,3 +27,8 @@
 
 void initNvs(void);
 void wifi_init_softap(void);
+
+
+#ifndef WIFI_MAN
+void dhcp_set_captiveportal_url(void);
+#endif

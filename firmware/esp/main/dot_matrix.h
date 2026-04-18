@@ -27,14 +27,14 @@ extern "C"
 {
 #endif
 
-    void initMatrixPins(uint8_t state);
+    void initMatrixPins(int state);
     void clearMatrix();
     void scanMatrix();
     void printMatrix();
     void drawMatrix();
     void testMatrixCoordinates();
     void updateCell(Cell *cell, bool status);
-    void updateCells(Cell *cells, uint8_t numCells, bool status);
+    void updateCells(Cell *cells, int numCells, bool status);
 
 #ifdef __cplusplus
 }

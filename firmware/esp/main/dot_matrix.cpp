@@ -29,9 +29,9 @@ gpio_num_t colPins[COLS] = {GPIO_NUM_27, GPIO_NUM_4, GPIO_NUM_16, GPIO_NUM_33, G
 
 bool matrix[ROWS][COLS];
 
-void initMatrixPins(uint8_t state = 0)
+void initMatrixPins(int state = 0)
 {
-    for (uint8_t i = 0; i < ROWS + COLS; i++)
+    for (int i = 0; i < ROWS + COLS; i++)
     {
         gpio_set_direction(allPins[i], GPIO_MODE_OUTPUT);
         gpio_set_level(allPins[i], state);
@@ -72,10 +72,10 @@ void scanMatrix()
     }
 }
 
-void displayCell(uint8_t row, uint8_t col)
+void displayCell(int row, int col)
 {
     // activate specified row
-    for (uint8_t r = 0; r < ROWS; r++)
+    for (int r = 0; r < ROWS; r++)
     {
         if (r == row)
         {
@@ -88,7 +88,7 @@ void displayCell(uint8_t row, uint8_t col)
     }
 
     // activate specified column
-    for (uint8_t c = 0; c < COLS; c++)
+    for (int c = 0; c < COLS; c++)
     {
         if (c == col)
         {
@@ -104,9 +104,9 @@ void displayCell(uint8_t row, uint8_t col)
 int64_t timer = 0;
 void testMatrixCoordinates()
 {
-    for (uint8_t r = 0; r < ROWS; r++)
+    for (int r = 0; r < ROWS; r++)
     {
-        for (uint8_t c = 0; c < COLS; c++)
+        for (int c = 0; c < COLS; c++)
         {
             displayCell(r, c);
 
@@ -133,7 +133,7 @@ void updateCell(Cell *cell, bool status)
     matrix[cell->r][cell->c] = status;
 };
 
-void updateCells(Cell *cells, uint8_t numCells, bool status)
+void updateCells(Cell *cells, int numCells, bool status)
 {
     for (int i = 0; i < numCells; i++)
     {
