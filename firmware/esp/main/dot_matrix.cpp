@@ -154,6 +154,7 @@ void updateCells(Cell *cells, uint8_t numCells, bool status)
     }
 }
 
+// debug purposes
 void printMatrix()
 {
     for (int r = 0; r < ROWS; r++)
