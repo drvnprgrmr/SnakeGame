@@ -2,7 +2,6 @@
 
 #define TAG "http server"
 
-
 extern const char captive_start[] asm("_binary_captive_html_start");
 extern const char captive_end[] asm("_binary_captive_html_end");
 
@@ -38,7 +37,7 @@ static esp_err_t all_post_handler(httpd_req_t *req)
     ESP_LOGI(TAG, "Post request received. buf_len = %i", buf_len);
     if (buf_len > 1)
     {
-        buf = calloc(1, buf_len);
+        buf = malloc(1 + buf_len);
         ESP_RETURN_ON_FALSE(buf, ESP_ERR_NO_MEM, TAG, "buffer alloc failed");
 
         while (cur_len < total_len)
@@ -59,7 +58,9 @@ static esp_err_t all_post_handler(httpd_req_t *req)
         ESP_LOGI(TAG, "%s", buf);
         ESP_LOGI(TAG, "====================================");
 
-        if (xQueueSend(serverQueue, buf, 0) == pdFAIL)
+        ESP_LOGI(TAG, "buf ptr value: %x, addr value %x", buf, &buf);
+
+        if (xQueueSend(serverQueue, (void *)&buf, 0) == pdFAIL)
         {
             ESP_LOGI(TAG, "Failed to post message to server queue");
         }

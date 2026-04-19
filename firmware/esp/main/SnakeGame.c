@@ -328,14 +328,24 @@ void randomUpdateSnakeDirection()
 
 void handle_server_data()
 {
-    char data[MAX_CONTENT_LEN];
+    // char data[MAX_CONTENT_LEN];
+    char *data = " ";
+    // char *dataPeek = " ";
 
-    if (xQueueReceive(serverQueue, data, 0) != pdPASS)
+    if (xQueueReceive(serverQueue, (void *)&data, 0) != pdPASS)
     {
+        // xQueueReceive(serverQueue, (void *)&data, 0);
         return;
     }
+    else
+    {
+        // return;
+    }
+
+
 
     ESP_LOGI(TAG, "Data received from server queue: %s", data);
+    free(data); // make sure to free the initial memory assigned
 }
 
 #pragma endregion
