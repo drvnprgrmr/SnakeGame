@@ -20,3 +20,7 @@ Below are the rules I figured out for how to run them directly (without IO expan
 
 **Col**: set all pins to 0 then toggle col pins to 1 to turn on that col
  
+
+
+## Startup connection
+When booted up for the first time, the esp32 will enter AP mode and broadcast the SSID, "SnakeGame". After connecting to this, the user will need to enter the SSID and password of the network to be connected to. The esp32 will then restart and attempt to connect to the provided network. If it can't connect, it will restart again in AP mode but if it connects, you can go on and start the game from the portal or also revisit "/captive" to change the network it should connect to.

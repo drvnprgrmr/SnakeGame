@@ -7,6 +7,8 @@
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
 
+extern QueueHandle_t serverQueue;
+
 typedef enum
 {
     RIGHT,
@@ -22,7 +24,7 @@ typedef enum
     PAUSE
 } GameState;
 
-/* ------------------------------- Load Screen ------------------------------ */
+#pragma region // Load Screen
 bool drawLoadScreen = false;
 const int MaxRightCol = COLS - 1;
 int currentRightColLimit = COLS - 1;
@@ -172,9 +174,9 @@ void updateLoadScreen()
         }
     }
 }
-/* -------------------------------------------------------------------------- */
+#pragma endregion
 
-/* -------------------------- Snake and Food Logic -------------------------- */
+#pragma region // Snake and Food Logic
 bool drawSnake = true;
 Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}};
 int snakeLength = 1;
@@ -320,8 +322,23 @@ void randomUpdateSnakeDirection()
         }
     }
 }
+#pragma endregion
 
-/* -------------------------------------------------------------------------- */
+#pragma region // HTTP server data manage
+
+void handle_server_data()
+{
+    char data[MAX_CONTENT_LEN];
+
+    if (xQueueReceive(serverQueue, data, 0) != pdPASS)
+    {
+        return;
+    }
+
+    ESP_LOGI(TAG, "Data received from server queue: %s", data);
+}
+
+#pragma endregion
 
 void app_main(void)
 {
@@ -347,7 +364,6 @@ void app_main(void)
     httpd_handle_t server = start_webserver();
     register_softap_uris(server);
 
-
     while (true)
     {
         drawMatrix();
@@ -360,6 +376,10 @@ void app_main(void)
             updateSnake();
             // randomUpdateSnakeDirection();
         }
+
+        // handle data gotten from the server
+        handle_server_data();
+
         vTaskDelay(1);
     }
 }
