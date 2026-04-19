@@ -8,7 +8,7 @@ extern const char captive_end[] asm("_binary_captive_html_end");
 #pragma region // Captive portal
 static esp_err_t captive_get_handler(httpd_req_t *req)
 {
-    const uint32_t captive_len = captive_start - captive_end;
+    const uint32_t captive_len = captive_end - captive_start;
 
     ESP_LOGI(TAG, "Serve captive portal page");
     httpd_resp_set_type(req, "text/html");
@@ -41,8 +41,11 @@ esp_err_t captive_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
 
 httpd_handle_t start_webserver()
 {
-    httpd_config_t cfg = HTTPD_DEFAULT_CONFIG();
     httpd_handle_t server = NULL;
+    httpd_config_t cfg = HTTPD_DEFAULT_CONFIG();
+
+    // Start the httpd server
+    ESP_LOGI(TAG, "Starting server on port: '%d'", cfg.server_port);
 
     esp_err_t err = httpd_start(&server, &cfg);
 

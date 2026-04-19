@@ -3,7 +3,6 @@
 #include "dot_matrix.h"
 #include "wifi_man.h"
 #include "http_server.h"
-#include "dns_server.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
@@ -348,9 +347,6 @@ void app_main(void)
     httpd_handle_t server = start_webserver();
     register_softap_uris(server);
 
-    // Start the DNS server that will redirect all queries to the softAP IP
-    dns_server_config_t config = DNS_SERVER_CONFIG_SINGLE("*" /* all A queries */, "WIFI_AP_DEF" /* softAP netif ID */);
-    start_dns_server(&config);
 
     while (true)
     {
