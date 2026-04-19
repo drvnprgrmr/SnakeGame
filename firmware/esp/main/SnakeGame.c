@@ -1,13 +1,17 @@
 #include <esp_random.h>
+#include <cJSON.h>
 
 #include "dot_matrix.h"
 #include "wifi_man.h"
 #include "http_server.h"
+#include "nvs_helpers.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
 
 extern QueueHandle_t serverQueue;
+
+nvs_handle_t handle;
 
 typedef enum
 {
@@ -328,23 +332,37 @@ void randomUpdateSnakeDirection()
 
 void handle_server_data()
 {
-    // char data[MAX_CONTENT_LEN];
     char *data = " ";
-    // char *dataPeek = " ";
 
     if (xQueueReceive(serverQueue, (void *)&data, 0) != pdPASS)
     {
-        // xQueueReceive(serverQueue, (void *)&data, 0);
         return;
     }
-    else
+    
+    ESP_LOGI(TAG, "Data received from server queue: %s", data);
+    
+    cJSON *root = cJSON_Parse(data);
+    char *ctx = cJSON_GetObjectItem(root, "ctx")->valuestring;
+
+    if (strcmp(ctx, "captive") == 0)
     {
-        // return;
+        // get ssid and password
+        char *ssid = cJSON_GetObjectItem(root, "ssid")->valuestring;
+        char *password = cJSON_GetObjectItem(root, "password")->valuestring;
+
+        ESP_LOGI(TAG, "ssid: %s, password: %s", ssid, password);
+
+        nvs_write_str(&handle, "sta_rst", "y");  // indicates whether the esp should restart in station mode
+        nvs_write_str(&handle, "sta_ssid", ssid);
+        nvs_write_str(&handle, "sta_pass", password);
+
+        // restart the esp
+        esp_restart();
+        
     }
 
+    cJSON_Delete(root);
 
-
-    ESP_LOGI(TAG, "Data received from server queue: %s", data);
     free(data); // make sure to free the initial memory assigned
 }
 
@@ -363,8 +381,17 @@ void app_main(void)
 
     initMatrixPins(0);
 
+    // initialize nvs
+    init_nvs();
+    open_nvs_handle(&handle);
+
+    char *sta_rst = " ", *sta_ssid = " ", *sta_pass = " ";
+    nvs_read_str(&handle, "sta_rst", &sta_rst);
+    nvs_read_str(&handle, "sta_ssid", &sta_ssid);
+    nvs_read_str(&handle, "sta_pass", &sta_pass);
+    ESP_LOGI(TAG, "rst: %s, ssid: %s, pass: %s", sta_rst, sta_ssid, sta_pass);
+    
     // initialize wifi
-    initNvs();
     wifi_init_softap();
 
     // Configure DNS-based captive portal

@@ -58,8 +58,6 @@ static esp_err_t all_post_handler(httpd_req_t *req)
         ESP_LOGI(TAG, "%s", buf);
         ESP_LOGI(TAG, "====================================");
 
-        ESP_LOGI(TAG, "buf ptr value: %x, addr value %x", buf, &buf);
-
         if (xQueueSend(serverQueue, (void *)&buf, 0) == pdFAIL)
         {
             ESP_LOGI(TAG, "Failed to post message to server queue");

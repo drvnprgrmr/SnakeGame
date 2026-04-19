@@ -2,7 +2,6 @@
 
 #include "wifi_man.h"
 
-
 static const char *TAG = "wifi man";
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base,
@@ -22,8 +21,8 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
-
-void dhcp_set_captiveportal_url(void) {
+void dhcp_set_captiveportal_url(void)
+{
     // get the IP of the access point to redirect to
     esp_netif_ip_info_t ip_info;
     esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_AP_DEF"), &ip_info);
@@ -33,7 +32,7 @@ void dhcp_set_captiveportal_url(void) {
     ESP_LOGI(TAG, "Set up softAP with IP: %s", ip_addr);
 
     // turn the IP into a URI
-    char* captiveportal_uri = (char*) malloc(32 * sizeof(char));
+    char *captiveportal_uri = (char *)malloc(32 * sizeof(char));
     assert(captiveportal_uri && "Failed to allocate captiveportal_uri");
     strcpy(captiveportal_uri, "http://");
     strcat(captiveportal_uri, ip_addr);
@@ -41,7 +40,7 @@ void dhcp_set_captiveportal_url(void) {
     ESP_LOGI(TAG, "debug captive uri: %s", captiveportal_uri);
 
     // get a handle to configure DHCP with
-    esp_netif_t* netif = esp_netif_get_handle_from_ifkey("WIFI_AP_DEF");
+    esp_netif_t *netif = esp_netif_get_handle_from_ifkey("WIFI_AP_DEF");
 
     // set the DHCP option 114
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_stop(netif));
@@ -71,12 +70,7 @@ void wifi_init_softap(void)
             .channel = AP_CHANNEL,
             .password = AP_PASS,
             .max_connection = AP_MAX_STA_CONN,
-#ifdef CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT
-            .authmode = WIFI_AUTH_WPA3_PSK,
-            .sae_pwe_h2e = WPA3_SAE_PWE_BOTH,
-#else /* CONFIG_ESP_WIFI_SOFTAP_SAE_SUPPORT */
             .authmode = WIFI_AUTH_WPA2_PSK,
-#endif
             .pmf_cfg = {
                 .required = true,
             },
@@ -102,14 +96,3 @@ void wifi_init_softap(void)
              AP_SSID, AP_PASS, AP_CHANNEL);
 }
 
-void initNvs()
-{
-    // Initialize NVS
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-    {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK(ret);
-}

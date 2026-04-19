@@ -4,3 +4,8 @@ sdkconfig.old
 
 # MacOS Directory files
 .DS_Store
+
+
+# ESP-IDF managed components
+
+managed_components/
