@@ -3,8 +3,38 @@
 
 <head>
     <style>
+        html {
+            background-color: beige;
+        }
+
         body {
             background-color: #ffffff;
+            width: 80%;
+            min-width: 50rem;
+            margin: 1rem auto;
+            padding: 1rem;
+            border-radius: 1rem;
+        }
+
+        #control-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ctrl-btn {
+            margin: .5rem;
+            padding: 1rem;
+            background-color: aquamarine;
+            border: none;
+            border-radius: 1rem;
+        }
+
+        .ctrl-btn:hover {
+            transition: all .1s;
+            cursor: pointer;
+            opacity: .5;
         }
     </style>
     <title>SnakeGame</title>
@@ -13,17 +43,180 @@
 <body>
     <h1>SnakeGame User Interface</h1>
     <p>Start the game and control the snake.</p>
-    <p>You can use wasd or the arrow keys once the game is started</p>
+    <p>You can use wasd or the arrow keys or the buttons to play once the game is started</p>
 
     <div>
-        <button disabled="disabled">Start Game</button>
+        <button id="start-btn">Start Game</button>
+        <button disabled="disabled" id="pause-btn">Pause Game</button>
         <div>
-            <p>Status: <span id="game_state">pending</span></p>
+            <p>Status: <span id="game-state"></span></p>
         </div>
+    </div>
+
+
+    <div id="control-container">
+        <div><button class="ctrl-btn" id="up-btn" disabled>Up</button></div>
+        <div id="middle">
+            <button class="ctrl-btn" id="left-btn" disabled>Left</button><button class="ctrl-btn" id="right-btn"
+                disabled>Right</button>
+        </div>
+        <div><button class="ctrl-btn" id="down-btn" disabled>Down</button></div>
+    </div>
+
+    <div>
+        <p>Action performed: <span id="action">None</span></p>
     </div>
 </body>
 
 <script>
+    //#region Vars
+    const URI = "/";
+    let inGame = false;
+
+    // directions
+    const UP = "UP"
+    const LEFT = "LEFT";
+    const RIGHT = "RIGHT";
+    const DOWN = "DOWN";
+    //#endregion
+
+    // game state btns
+    const startBtn = document.getElementById("start-btn");
+    const pauseBtn = document.getElementById("pause-btn");
+
+    const actionValue = document.getElementById("action");
+
+
+    startBtn.addEventListener("click", (ev) => {
+
+        fetch(URI, {
+            method: "POST",
+            body: JSON.stringify({
+                ctx: "start",
+            })
+        });
+
+        // disable start btn and enable pause btn
+        startBtn.setAttribute("disabled", "disabled");
+        pauseBtn.removeAttribute("disabled");
+
+        // enable all ctrl buttons
+        const ctrlBtns = document.getElementsByClassName("ctrl-btn");
+        for (let i = 0; i < ctrlBtns.length; i++) {
+            const ctrlBtn = ctrlBtns.item(i);
+
+            ctrlBtn.removeAttribute("disabled");
+        }
+
+        actionValue.innerText = "Game started.";
+
+        inGame = true;
+    });
+    pauseBtn.addEventListener("click", (ev) => {
+        fetch(URI, {
+            method: "POST",
+            body: JSON.stringify({
+                ctx: "pause",
+            })
+        })
+
+        // disable pause btn and enable start btn
+        pauseBtn.setAttribute("disabled", "disabled");
+        startBtn.removeAttribute("disabled");
+
+        // enable all ctrl buttons
+        const ctrlBtns = document.getElementsByClassName("ctrl-btn");
+        for (let i = 0; i < ctrlBtns.length; i++) {
+            const ctrlBtn = ctrlBtns.item(i);
+
+            ctrlBtn.setAttribute("disabled", "disabled");
+        }
+        actionValue.innerText = "Game paused.";
+
+        inGame = false;
+    });
+
+    // control btns
+    const upBtn = document.getElementById("up-btn");
+    const leftBtn = document.getElementById("left-btn");
+    const rightBtn = document.getElementById("right-btn");
+    const downBtn = document.getElementById("down-btn");
+
+    upBtn.addEventListener("click", (ev) => {
+        sendMove(UP);
+    })
+    leftBtn.addEventListener("click", (ev) => {
+        sendMove(LEFT);
+    })
+    rightBtn.addEventListener("click", (ev) => {
+        sendMove(RIGHT);
+    })
+    downBtn.addEventListener("click", (ev) => {
+        sendMove(DOWN);
+    })
+
+
+    // Add listeners to keypresses
+    document.addEventListener("keypress", (ev) => {
+        switch (ev.key) {
+            case "w":
+                sendMove(UP);
+                break;
+
+            case "a":
+                sendMove(LEFT);
+                break;
+
+            case "s":
+                sendMove(DOWN);
+                break;
+
+            case "d":
+                sendMove(RIGHT);
+                break;
+            default:
+                break;
+        }
+    })
+
+    // Add event listeners for arrow keys
+    document.addEventListener("keyup", (ev) => {
+        switch (ev.key) {
+            case "ArrowUp":
+                sendMove(UP);
+                break;
+
+            case "ArrowLeft":
+                sendMove(LEFT);
+                break;
+
+            case "ArrowDown":
+                sendMove(DOWN);
+                break;
+
+            case "ArrowRight":
+                sendMove(RIGHT);
+                break;
+            default:
+                break;
+        }
+    })
+
+    function sendMove(direction) {
+        if (inGame) {
+            fetch(URI, {
+                method: "POST",
+                body: JSON.stringify({
+                    ctx: "move",
+                    direction
+                })
+            });
+
+            actionValue.innerText = "moved " + direction;
+        }
+    }
+
+
 
 </script>
 
