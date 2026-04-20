@@ -2,8 +2,12 @@
 
 #include "wifi_man.h"
 #include "dns_server.h"
+#include "nvs_helpers.h"
+#include "http_server.h"
 
 static const char *TAG = "wifi_man";
+
+static const nvs_handle_t handle;
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
@@ -16,6 +20,50 @@ static EventGroupHandle_t s_wifi_event_group;
 
 static int s_retry_num = 0;
 
+void wifi_init_captive_mode()
+{
+    char *sta_en = " ", *sta_ssid = " ", *sta_pass = " ";
+    nvs_read_str(&handle, "sta_en", &sta_en);
+    nvs_read_str(&handle, "sta_ssid", &sta_ssid);
+    nvs_read_str(&handle, "sta_pass", &sta_pass);
+    ESP_LOGI(TAG, "rst: %s, ssid: %s, pass: %s", sta_en, sta_ssid, sta_pass);
+
+    // initialize nvs
+    init_nvs();
+    open_nvs_handle(&handle);
+
+    // decide whether or not to start in station mode or softAP
+    if (strcmp(sta_en, "y") == 0)
+    {
+
+        wifi_init_sta(sta_ssid, sta_pass);
+
+        free(sta_en);
+        free(sta_ssid);
+        free(sta_pass);
+
+        // register handler that will revert to ap mode if device doesn't connect after max reties
+        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                            WIFI_EVENT_STA_DISCONNECTED,
+                                                            &captive_mode_event_handler,
+                                                            NULL,
+                                                            NULL));
+
+        // start webserver
+        httpd_handle_t server = start_webserver();
+        register_station_uris(server);
+    }
+    else
+    {
+        // initialize wifi in softap mode
+        wifi_init_softap();
+
+        // start webserver
+        httpd_handle_t server = start_webserver();
+        register_softap_uris(server);
+    }
+}
+
 static void captive_mode_event_handler(void *arg, esp_event_base_t event_base,
                                        int32_t event_id, void *event_data)
 {
@@ -23,9 +71,13 @@ static void captive_mode_event_handler(void *arg, esp_event_base_t event_base,
     {
         if (s_retry_num >= STA_MAX_RECONNECT)
         {
-            // disable sta mode and restart the
-            
-                }
+            init_nvs();
+            open_nvs_handle(&handle);
+
+            // disable sta mode and restart the esp
+            nvs_write_str(&handle, "sta_en", "n");
+            return esp_restart();
+        }
     }
 }
 

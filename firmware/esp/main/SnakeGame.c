@@ -381,34 +381,8 @@ void app_main(void)
 
     initMatrixPins(0);
 
-    // initialize nvs
-    init_nvs();
-    open_nvs_handle(&handle);
-
-    char *sta_en = " ", *sta_ssid = " ", *sta_pass = " ";
-    nvs_read_str(&handle, "sta_en", &sta_en);
-    nvs_read_str(&handle, "sta_ssid", &sta_ssid);
-    nvs_read_str(&handle, "sta_pass", &sta_pass);
-    ESP_LOGI(TAG, "rst: %s, ssid: %s, pass: %s", sta_en, sta_ssid, sta_pass);
-
-    // decide whether or not to start in station mode or softAP
-    if (strcmp(sta_en, "y") == 0)
-    {
-        wifi_init_sta(sta_ssid, sta_pass);
-
-        free(sta_en);
-        free(sta_ssid);
-        free(sta_pass);
-    }
-    else
-    {
-        // initialize wifi
-        wifi_init_softap();
-    }
-
-    // start http server
-    httpd_handle_t server = start_webserver();
-    register_softap_uris(server);
+    // initialise wifi
+    wifi_init_captive_mode();
 
     while (true)
     {

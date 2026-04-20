@@ -22,7 +22,7 @@ static esp_err_t captive_get_handler(httpd_req_t *req)
 }
 
 static const httpd_uri_t captive = {
-    .uri = "/",
+    .uri = "/captive",
     .method = HTTP_GET,
     .handler = captive_get_handler};
 
@@ -50,7 +50,7 @@ static const httpd_uri_t index_uri = {
 
 #pragma endregion // Index page
 
-
+#pragma region // All post requests
 static esp_err_t all_post_handler(httpd_req_t *req)
 {
     char *buf;
@@ -99,7 +99,9 @@ static const httpd_uri_t all_post = {
     .handler = all_post_handler,
 };
 
-#pragma region // home redirect
+#pragma endregion // All post requests
+
+#pragma region // 404 Redirects to home
 esp_err_t home_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
 {
     // Set status
@@ -139,7 +141,14 @@ httpd_handle_t start_webserver()
 void register_softap_uris(httpd_handle_t server)
 {
     ESP_LOGI(TAG, "Registering URI handlers for softAP mode.");
-    httpd_register_uri_handler(server, &captive);
+
+    httpd_uri_t softap_captive = {
+        .uri = "/",
+        .method = "GET",
+        .handler = &captive,
+    };
+
+    httpd_register_uri_handler(server, &softap_captive); // register captive at the root for softap mode
     httpd_register_uri_handler(server, &all_post);
     httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, home_redirect_handler);
 }
@@ -148,6 +157,7 @@ void register_station_uris(httpd_handle_t server)
 {
     ESP_LOGI(TAG, "Registering URI handlers for station mode.");
     httpd_register_uri_handler(server, &index_uri);
+    httpd_register_uri_handler(server, &captive);
     httpd_register_uri_handler(server, &all_post);
     httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, home_redirect_handler);
 }
