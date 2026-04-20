@@ -1,10 +1,11 @@
 #include <esp_random.h>
 #include <cJSON.h>
 
-#include "dot_matrix.h"
 #include "wifi_man.h"
 #include "http_server.h"
 #include "nvs_helpers.h"
+
+#include "dot_matrix.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH (ROWS + COLS)
@@ -338,9 +339,9 @@ void handle_server_data()
     {
         return;
     }
-    
+
     ESP_LOGI(TAG, "Data received from server queue: %s", data);
-    
+
     cJSON *root = cJSON_Parse(data);
     char *ctx = cJSON_GetObjectItem(root, "ctx")->valuestring;
 
@@ -352,13 +353,12 @@ void handle_server_data()
 
         ESP_LOGI(TAG, "ssid: %s, password: %s", ssid, password);
 
-        nvs_write_str(&handle, "sta_rst", "y");  // indicates whether the esp should restart in station mode
+        nvs_write_str(&handle, "sta_en", "y"); // indicates whether the esp should restart in station mode
         nvs_write_str(&handle, "sta_ssid", ssid);
         nvs_write_str(&handle, "sta_pass", password);
 
         // restart the esp
         esp_restart();
-        
     }
 
     cJSON_Delete(root);
@@ -385,17 +385,26 @@ void app_main(void)
     init_nvs();
     open_nvs_handle(&handle);
 
-    char *sta_rst = " ", *sta_ssid = " ", *sta_pass = " ";
-    nvs_read_str(&handle, "sta_rst", &sta_rst);
+    char *sta_en = " ", *sta_ssid = " ", *sta_pass = " ";
+    nvs_read_str(&handle, "sta_en", &sta_en);
     nvs_read_str(&handle, "sta_ssid", &sta_ssid);
     nvs_read_str(&handle, "sta_pass", &sta_pass);
-    ESP_LOGI(TAG, "rst: %s, ssid: %s, pass: %s", sta_rst, sta_ssid, sta_pass);
-    
-    // initialize wifi
-    wifi_init_softap();
+    ESP_LOGI(TAG, "rst: %s, ssid: %s, pass: %s", sta_en, sta_ssid, sta_pass);
 
-    // Configure DNS-based captive portal
-    dhcp_set_captiveportal_url();
+    // decide whether or not to start in station mode or softAP
+    if (strcmp(sta_en, "y") == 0)
+    {
+        wifi_init_sta(sta_ssid, sta_pass);
+
+        free(sta_en);
+        free(sta_ssid);
+        free(sta_pass);
+    }
+    else
+    {
+        // initialize wifi
+        wifi_init_softap();
+    }
 
     // start http server
     httpd_handle_t server = start_webserver();

@@ -2,12 +2,14 @@
 
 #define TAG "http server"
 
-extern const char captive_start[] asm("_binary_captive_html_start");
-extern const char captive_end[] asm("_binary_captive_html_end");
-
 QueueHandle_t serverQueue;
 
 #pragma region // Captive portal
+
+// get the start and end of the embedded file
+extern const char captive_start[] asm("_binary_captive_html_start");
+extern const char captive_end[] asm("_binary_captive_html_end");
+
 static esp_err_t captive_get_handler(httpd_req_t *req)
 {
     const uint32_t captive_len = captive_end - captive_start;
@@ -20,11 +22,34 @@ static esp_err_t captive_get_handler(httpd_req_t *req)
 }
 
 static const httpd_uri_t captive = {
-    .uri = "/captive",
+    .uri = "/",
     .method = HTTP_GET,
     .handler = captive_get_handler};
 
 #pragma endregion
+
+#pragma region // Index page
+extern const char index_start[] asm("_binary_index_html_start");
+extern const char index_end[] asm("_binary_index_html_end");
+
+static esp_err_t index_get_handler(httpd_req_t *req)
+{
+    const uint64_t index_len = index_end - index_start;
+
+    ESP_LOGI(TAG, "serving index page");
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send(req, index_start, index_len);
+
+    return ESP_OK;
+}
+
+static const httpd_uri_t index_uri = {
+    .uri = "/",
+    .method = HTTP_GET,
+    .handler = index_get_handler};
+
+#pragma endregion // Index page
+
 
 static esp_err_t all_post_handler(httpd_req_t *req)
 {
@@ -74,17 +99,17 @@ static const httpd_uri_t all_post = {
     .handler = all_post_handler,
 };
 
-#pragma region // Captive portal Redirect
-esp_err_t captive_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
+#pragma region // home redirect
+esp_err_t home_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
 {
     // Set status
     httpd_resp_set_status(req, "303 See Other");
-    // Redirect to the "/captive" directory
-    httpd_resp_set_hdr(req, "Location", "/captive");
+    // Redirect all requests
+    httpd_resp_set_hdr(req, "Location", "/");
     // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
     httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
 
-    ESP_LOGI(TAG, "Redirecting captive portal");
+    ESP_LOGI(TAG, "Redirecting request home");
     return ESP_OK;
 }
 #pragma endregion
@@ -116,5 +141,13 @@ void register_softap_uris(httpd_handle_t server)
     ESP_LOGI(TAG, "Registering URI handlers for softAP mode.");
     httpd_register_uri_handler(server, &captive);
     httpd_register_uri_handler(server, &all_post);
-    httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, captive_redirect_handler);
+    httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, home_redirect_handler);
+}
+
+void register_station_uris(httpd_handle_t server)
+{
+    ESP_LOGI(TAG, "Registering URI handlers for station mode.");
+    httpd_register_uri_handler(server, &index_uri);
+    httpd_register_uri_handler(server, &all_post);
+    httpd_register_err_handler(server, HTTPD_404_NOT_FOUND, home_redirect_handler);
 }

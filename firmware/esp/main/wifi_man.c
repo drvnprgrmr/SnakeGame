@@ -1,12 +1,63 @@
 #define WIFI_MAN
 
 #include "wifi_man.h"
+#include "dns_server.h"
 
-static const char *TAG = "wifi man";
+static const char *TAG = "wifi_man";
+
+/* FreeRTOS event group to signal when we are connected*/
+static EventGroupHandle_t s_wifi_event_group;
+
+/* The event group allows multiple bits for each event, but we only care about two events:
+ * - we are connected to the AP with an IP
+ * - we failed to connect after the maximum amount of retries */
+#define WIFI_CONNECTED_BIT BIT0
+#define WIFI_FAIL_BIT BIT1
+
+static int s_retry_num = 0;
+
+static void captive_mode_event_handler(void *arg, esp_event_base_t event_base,
+                                       int32_t event_id, void *event_data)
+{
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
+    {
+        if (s_retry_num >= STA_MAX_RECONNECT)
+        {
+            // disable sta mode and restart the
+            
+                }
+    }
+}
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base,
                                int32_t event_id, void *event_data)
 {
+    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
+    {
+        esp_wifi_connect();
+    }
+    else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
+    {
+        if (s_retry_num < STA_MAX_RECONNECT)
+        {
+            esp_wifi_connect();
+            s_retry_num++;
+            ESP_LOGI(TAG, "retry to connect to the AP");
+        }
+        else
+        {
+            xEventGroupSetBits(s_wifi_event_group, WIFI_FAIL_BIT);
+        }
+        ESP_LOGI(TAG, "connect to the AP fail");
+    }
+    else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
+    {
+        ip_event_got_ip_t *event = (ip_event_got_ip_t *)event_data;
+        ESP_LOGI(TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
+        s_retry_num = 0;
+        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+    }
+
     if (event_id == WIFI_EVENT_AP_STACONNECTED)
     {
         wifi_event_ap_staconnected_t *event = (wifi_event_ap_staconnected_t *)event_data;
@@ -21,31 +72,69 @@ static void wifi_event_handler(void *arg, esp_event_base_t event_base,
     }
 }
 
-void dhcp_set_captiveportal_url(void)
+void wifi_init_sta(char *ssid, char *pass)
 {
-    // get the IP of the access point to redirect to
-    esp_netif_ip_info_t ip_info;
-    esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_AP_DEF"), &ip_info);
+    s_wifi_event_group = xEventGroupCreate();
 
-    char ip_addr[16];
-    inet_ntoa_r(ip_info.ip.addr, ip_addr, 16);
-    ESP_LOGI(TAG, "Set up softAP with IP: %s", ip_addr);
+    ESP_ERROR_CHECK(esp_netif_init());
 
-    // turn the IP into a URI
-    char *captiveportal_uri = (char *)malloc(32 * sizeof(char));
-    assert(captiveportal_uri && "Failed to allocate captiveportal_uri");
-    strcpy(captiveportal_uri, "http://");
-    strcat(captiveportal_uri, ip_addr);
-    strcat(captiveportal_uri, "/captive");
-    ESP_LOGI(TAG, "debug captive uri: %s", captiveportal_uri);
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
 
-    // get a handle to configure DHCP with
-    esp_netif_t *netif = esp_netif_get_handle_from_ifkey("WIFI_AP_DEF");
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
-    // set the DHCP option 114
-    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_stop(netif));
-    ESP_ERROR_CHECK(esp_netif_dhcps_option(netif, ESP_NETIF_OP_SET, ESP_NETIF_CAPTIVEPORTAL_URI, captiveportal_uri, strlen(captiveportal_uri)));
-    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_start(netif));
+    esp_event_handler_instance_t instance_any_id;
+    esp_event_handler_instance_t instance_got_ip;
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
+                                                        ESP_EVENT_ANY_ID,
+                                                        &wifi_event_handler,
+                                                        NULL,
+                                                        &instance_any_id));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT,
+                                                        IP_EVENT_STA_GOT_IP,
+                                                        &wifi_event_handler,
+                                                        NULL,
+                                                        &instance_got_ip));
+
+    wifi_config_t wifi_config = {
+        .sta = {
+            .ssid = ssid,
+            .password = pass,
+
+#ifdef CONFIG_ESP_WIFI_WPA3_COMPATIBLE_SUPPORT
+            .disable_wpa3_compatible_mode = 0,
+#endif
+        },
+    };
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+
+    ESP_LOGI(TAG, "wifi_init_sta finished.");
+
+    /* Waiting until either the connection is established (WIFI_CONNECTED_BIT) or connection failed for the maximum
+     * number of re-tries (WIFI_FAIL_BIT). The bits are set by event_handler() (see above) */
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+                                           WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
+                                           pdFALSE,
+                                           pdFALSE,
+                                           portMAX_DELAY);
+
+    /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
+     * happened. */
+    if (bits & WIFI_CONNECTED_BIT)
+    {
+        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", ssid, pass);
+    }
+    else if (bits & WIFI_FAIL_BIT)
+    {
+        ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", ssid, pass);
+    }
+    else
+    {
+        ESP_LOGE(TAG, "UNEXPECTED EVENT");
+    }
 }
 
 void wifi_init_softap(void)
@@ -80,8 +169,7 @@ void wifi_init_softap(void)
                 .protected_keep_alive = 1,
             },
 #endif
-            .gtk_rekey_interval = EXAMPLE_GTK_REKEY_INTERVAL,
-        },
+            0},
     };
     if (strlen(AP_PASS) == 0)
     {
@@ -94,5 +182,35 @@ void wifi_init_softap(void)
 
     ESP_LOGI(TAG, "wifi_init_softap finished. SSID:%s password:%s channel:%d",
              AP_SSID, AP_PASS, AP_CHANNEL);
-}
 
+    // Configure DNS-based captive portal, if configured
+#ifdef CONFIG_ESP_ENABLE_DHCP_CAPTIVEPORTAL
+    // get the IP of the access point to redirect to
+    esp_netif_ip_info_t ip_info;
+    esp_netif_get_ip_info(esp_netif_get_handle_from_ifkey("WIFI_AP_DEF"), &ip_info);
+
+    char ip_addr[16];
+    inet_ntoa_r(ip_info.ip.addr, ip_addr, 16);
+    ESP_LOGI(TAG, "Set up softAP with IP: %s", ip_addr);
+
+    // turn the IP into a URI
+    char *captiveportal_uri = (char *)malloc(32 * sizeof(char));
+    assert(captiveportal_uri && "Failed to allocate captiveportal_uri");
+    strcpy(captiveportal_uri, "http://");
+    strcat(captiveportal_uri, ip_addr);
+    strcat(captiveportal_uri, "/captive");
+    ESP_LOGI(TAG, "debug captive uri: %s", captiveportal_uri);
+
+    // get a handle to configure DHCP with
+    esp_netif_t *netif = esp_netif_get_handle_from_ifkey("WIFI_AP_DEF");
+
+    // set the DHCP option 114
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_stop(netif));
+    ESP_ERROR_CHECK(esp_netif_dhcps_option(netif, ESP_NETIF_OP_SET, ESP_NETIF_CAPTIVEPORTAL_URI, captiveportal_uri, strlen(captiveportal_uri)));
+    ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_start(netif));
+#endif
+
+    // Start the DNS server that will redirect all queries to the softAP IP
+    dns_server_config_t config = DNS_SERVER_CONFIG_SINGLE("*" /* all A queries */, "WIFI_AP_DEF" /* softAP netif ID */);
+    start_dns_server(&config);
+}

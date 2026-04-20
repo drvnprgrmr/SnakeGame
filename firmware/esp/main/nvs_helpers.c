@@ -39,6 +39,17 @@ void nvs_write_str(nvs_handle_t *handle, char *k, char *v)
     {
         ESP_LOGE(TAG, "Failed to write string! %s", esp_err_to_name(err));
     }
+
+    // Commit changes
+    // After setting any values, nvs_commit() must be called to ensure changes are written
+    // to flash storage. Implementations may write to storage at other times,
+    // but this is not guaranteed.
+    ESP_LOGI(TAG, "\nCommitting updates in NVS...");
+    err = nvs_commit(*handle);
+    if (err != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to commit NVS changes!");
+    }
 }
 
 void nvs_read_str(nvs_handle_t *handle, char *k, char **v)

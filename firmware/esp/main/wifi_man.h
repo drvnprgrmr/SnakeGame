@@ -17,16 +17,8 @@
 #define AP_CHANNEL 1
 #define AP_MAX_STA_CONN 1
 
-#if CONFIG_ESP_GTK_REKEYING_ENABLE
-#define EXAMPLE_GTK_REKEY_INTERVAL CONFIG_ESP_GTK_REKEY_INTERVAL
-#else
-#define EXAMPLE_GTK_REKEY_INTERVAL 0
-#endif
-
+// sta
+#define STA_MAX_RECONNECT 5
 
 void wifi_init_softap(void);
-
-
-#ifndef WIFI_MAN
-void dhcp_set_captiveportal_url(void);
-#endif
+void wifi_init_sta(char *ssid, char *pass);

@@ -10,3 +10,4 @@
 
 httpd_handle_t start_webserver();
 void register_softap_uris(httpd_handle_t server);
+void register_station_uris(httpd_handle_t server);
