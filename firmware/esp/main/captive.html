@@ -44,9 +44,9 @@
 
         const data = JSON.stringify(obj);
 
-        fetch("/", {
+        fetch("http://192.168.4.1/", {
             method: "POST",
-            body: data
+            body: data,
         }).then((resp) => {
             if (resp.ok) {
                 alert("Form submitted!");

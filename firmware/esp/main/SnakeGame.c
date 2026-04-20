@@ -358,6 +358,7 @@ void handle_server_data()
         nvs_write_str(&handle, "sta_pass", password);
 
         // restart the esp
+        nvs_close(handle);
         esp_restart();
     }
 
@@ -381,6 +382,9 @@ void app_main(void)
 
     initMatrixPins(0);
 
+    // init NVS
+    init_nvs(&handle);
+    
     // initialise wifi
     wifi_init_captive_mode();
 

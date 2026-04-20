@@ -111,7 +111,7 @@ esp_err_t home_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
     // iOS requires content in the response to detect a captive portal, simply redirecting is not sufficient.
     httpd_resp_send(req, "Redirect to the captive portal", HTTPD_RESP_USE_STRLEN);
 
-    ESP_LOGI(TAG, "Redirecting request home");
+    ESP_LOGI(TAG, "Redirecting...\nrequest url: %s, err: %i", req->uri, err);
     return ESP_OK;
 }
 #pragma endregion
@@ -144,8 +144,8 @@ void register_softap_uris(httpd_handle_t server)
 
     httpd_uri_t softap_captive = {
         .uri = "/",
-        .method = "GET",
-        .handler = &captive,
+        .method = HTTP_GET,
+        .handler = &captive_get_handler,
     };
 
     httpd_register_uri_handler(server, &softap_captive); // register captive at the root for softap mode

@@ -7,7 +7,7 @@
 
 static const char *TAG = "wifi_man";
 
-static const nvs_handle_t handle;
+static nvs_handle_t handle;
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
@@ -22,32 +22,29 @@ static int s_retry_num = 0;
 
 void wifi_init_captive_mode()
 {
-    char *sta_en = " ", *sta_ssid = " ", *sta_pass = " ";
+    // initialize nvs
+    init_nvs(&handle);
+
+    char *sta_en = "";
+    char *sta_ssid = " ";
+    char *sta_pass = "";
+
+    ESP_LOGI(TAG, "\n Before | en(%x): %s, ssid(%x): %s, pass(%x): %s", sta_en, sta_en, sta_ssid, sta_ssid, sta_pass, sta_pass);
+
     nvs_read_str(&handle, "sta_en", &sta_en);
     nvs_read_str(&handle, "sta_ssid", &sta_ssid);
     nvs_read_str(&handle, "sta_pass", &sta_pass);
-    ESP_LOGI(TAG, "rst: %s, ssid: %s, pass: %s", sta_en, sta_ssid, sta_pass);
 
-    // initialize nvs
-    init_nvs();
-    open_nvs_handle(&handle);
+    ESP_LOGI(TAG, "\n After | en(%x): %s, ssid(%x): %s, pass(%x): %s", sta_en, sta_en, sta_ssid, sta_ssid, sta_pass, sta_pass);
 
     // decide whether or not to start in station mode or softAP
     if (strcmp(sta_en, "y") == 0)
     {
-
         wifi_init_sta(sta_ssid, sta_pass);
 
         free(sta_en);
         free(sta_ssid);
         free(sta_pass);
-
-        // register handler that will revert to ap mode if device doesn't connect after max reties
-        ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT,
-                                                            WIFI_EVENT_STA_DISCONNECTED,
-                                                            &captive_mode_event_handler,
-                                                            NULL,
-                                                            NULL));
 
         // start webserver
         httpd_handle_t server = start_webserver();
@@ -61,23 +58,6 @@ void wifi_init_captive_mode()
         // start webserver
         httpd_handle_t server = start_webserver();
         register_softap_uris(server);
-    }
-}
-
-static void captive_mode_event_handler(void *arg, esp_event_base_t event_base,
-                                       int32_t event_id, void *event_data)
-{
-    if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
-    {
-        if (s_retry_num >= STA_MAX_RECONNECT)
-        {
-            init_nvs();
-            open_nvs_handle(&handle);
-
-            // disable sta mode and restart the esp
-            nvs_write_str(&handle, "sta_en", "n");
-            return esp_restart();
-        }
     }
 }
 
@@ -151,14 +131,18 @@ void wifi_init_sta(char *ssid, char *pass)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = ssid,
-            .password = pass,
+    // .ssid = {ssid},
+    // .password = {pass},
 
 #ifdef CONFIG_ESP_WIFI_WPA3_COMPATIBLE_SUPPORT
             .disable_wpa3_compatible_mode = 0,
 #endif
         },
     };
+
+    strcpy((char *)wifi_config.sta.ssid, ssid);
+    strcpy((char *)wifi_config.sta.password, pass);
+
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
@@ -177,11 +161,21 @@ void wifi_init_sta(char *ssid, char *pass)
      * happened. */
     if (bits & WIFI_CONNECTED_BIT)
     {
-        ESP_LOGI(TAG, "connected to ap SSID:%s password:%s", ssid, pass);
+        ESP_LOGI(TAG, "Connected to ap SSID:%s password:%s", ssid, pass);
     }
     else if (bits & WIFI_FAIL_BIT)
     {
         ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s", ssid, pass);
+
+        init_nvs(&handle);
+
+        ESP_LOGI(TAG, "Restarting in softAP mode because of failure to connect to station.");
+
+        // disable sta mode and restart the esp
+        nvs_write_str(&handle, "sta_en", "n");
+        nvs_close(handle);
+
+        return esp_restart();
     }
     else
     {
@@ -262,7 +256,7 @@ void wifi_init_softap(void)
     ESP_ERROR_CHECK_WITHOUT_ABORT(esp_netif_dhcps_start(netif));
 #endif
 
-    // Start the DNS server that will redirect all queries to the softAP IP
-    dns_server_config_t config = DNS_SERVER_CONFIG_SINGLE("*" /* all A queries */, "WIFI_AP_DEF" /* softAP netif ID */);
-    start_dns_server(&config);
+    // // Start the DNS server that will redirect all queries to the softAP IP
+    // dns_server_config_t config = DNS_SERVER_CONFIG_SINGLE("*" /* all A queries */, "WIFI_AP_DEF" /* softAP netif ID */);
+    // start_dns_server(&config);
 }
