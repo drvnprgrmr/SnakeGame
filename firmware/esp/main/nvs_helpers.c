@@ -57,9 +57,7 @@ void nvs_read_str(nvs_handle_t *handle, char *k, char **v)
     esp_err_t err = nvs_get_str(*handle, k, NULL, &required_size);
     if (err == ESP_OK)
     {
-        ESP_LOGI(TAG, "before malloc | v addr: %x, v val: %x, size: %i", *v, **v, required_size);
         *v = malloc(required_size);
-        ESP_LOGI(TAG, "after malloc | v addr: %x, v val: %x, size: %i", *v, **v, required_size);
         err = nvs_get_str(*handle, k, *v, &required_size);
         if (err == ESP_OK)
         {

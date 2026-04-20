@@ -18,7 +18,7 @@
 #define AP_MAX_STA_CONN 1
 
 // sta
-#define STA_MAX_RECONNECT 5
+#define STA_MAX_RECONNECT 3
 
 void wifi_init_softap(void);
 void wifi_init_sta(char *ssid, char *pass);

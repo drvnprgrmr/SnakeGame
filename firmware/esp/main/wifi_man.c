@@ -29,13 +29,9 @@ void wifi_init_captive_mode()
     char *sta_ssid = " ";
     char *sta_pass = "";
 
-    ESP_LOGI(TAG, "\n Before | en(%x): %s, ssid(%x): %s, pass(%x): %s", sta_en, sta_en, sta_ssid, sta_ssid, sta_pass, sta_pass);
-
     nvs_read_str(&handle, "sta_en", &sta_en);
     nvs_read_str(&handle, "sta_ssid", &sta_ssid);
     nvs_read_str(&handle, "sta_pass", &sta_pass);
-
-    ESP_LOGI(TAG, "\n After | en(%x): %s, ssid(%x): %s, pass(%x): %s", sta_en, sta_en, sta_ssid, sta_ssid, sta_pass, sta_pass);
 
     // decide whether or not to start in station mode or softAP
     if (strcmp(sta_en, "y") == 0)
@@ -131,9 +127,6 @@ void wifi_init_sta(char *ssid, char *pass)
 
     wifi_config_t wifi_config = {
         .sta = {
-    // .ssid = {ssid},
-    // .password = {pass},
-
 #ifdef CONFIG_ESP_WIFI_WPA3_COMPATIBLE_SUPPORT
             .disable_wpa3_compatible_mode = 0,
 #endif
