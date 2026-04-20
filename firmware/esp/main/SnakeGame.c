@@ -30,7 +30,8 @@ typedef enum
 } GameState;
 
 #pragma region // Load Screen
-bool drawLoadScreen = false;
+// ===
+bool drawLoadScreen = true;
 const int MaxRightCol = COLS - 1;
 int currentRightColLimit = COLS - 1;
 
@@ -182,7 +183,7 @@ void updateLoadScreen()
 #pragma endregion
 
 #pragma region // Snake and Food Logic
-bool drawSnake = true;
+bool drawSnake = false;
 Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}};
 int snakeLength = 1;
 Direction snakeDirection = LEFT;
@@ -361,6 +362,37 @@ void handle_server_data()
         nvs_close(handle);
         esp_restart();
     }
+    else if (strcmp(ctx, "start") == 0)
+    {
+        drawLoadScreen = false;
+        drawSnake = true;
+    }
+    else if (strcmp(ctx, "pause") == 0)
+    {
+        drawLoadScreen = true;
+        drawSnake = false;
+    }
+    else if (strcmp(ctx, "move") == 0)
+    {
+        char *direction = cJSON_GetObjectItem(root, "direction")->valuestring;
+
+        if (strcmp(direction, "UP") == 0)
+        {
+            snakeDirection = UP;
+        }
+        else if (strcmp(direction, "DOWN") == 0)
+        {
+            snakeDirection = DOWN;
+        }
+        else if (strcmp(direction, "LEFT") == 0)
+        {
+            snakeDirection = LEFT;
+        }
+        else if (strcmp(direction, "RIGHT") == 0)
+        {
+            snakeDirection = RIGHT;
+        }
+    }
 
     cJSON_Delete(root);
 
@@ -384,7 +416,7 @@ void app_main(void)
 
     // init NVS
     init_nvs(&handle);
-    
+
     // initialise wifi
     wifi_init_captive_mode();
 
