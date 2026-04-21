@@ -24,8 +24,8 @@ gpio_num_t allPins[ROWS + COLS] = {
 };
 
 // Run scanMatrix to figure these out
-gpio_num_t rowPins[ROWS] = {GPIO_NUM_32, GPIO_NUM_14, GPIO_NUM_19, GPIO_NUM_26, GPIO_NUM_15, GPIO_NUM_18, GPIO_NUM_21, GPIO_NUM_17};
-gpio_num_t colPins[COLS] = {GPIO_NUM_27, GPIO_NUM_4, GPIO_NUM_16, GPIO_NUM_33, GPIO_NUM_5, GPIO_NUM_25, GPIO_NUM_12, GPIO_NUM_13};
+gpio_num_t rowPins[ROWS] = {allPins[7], allPins[2], allPins[15], allPins[4], allPins[8], allPins[14], allPins[9], allPins[12]};
+gpio_num_t colPins[COLS] = {allPins[3], allPins[10], allPins[11], allPins[6], allPins[13], allPins[5], allPins[1], allPins[0]};
 
 bool matrix[ROWS][COLS];
 
@@ -125,7 +125,6 @@ void clearMatrix()
             matrix[r][c] = false;
         }
     }
-
 }
 
 void updateCell(Cell *cell, bool status)
@@ -173,7 +172,7 @@ void drawMatrix()
                 gpio_set_level(colPins[c], 0);
             }
         }
-        
+
         ets_delay_us(500); // might need to update to non-blocking solution later when adding wifi
         gpio_set_level(rowPins[r], 1);
     }

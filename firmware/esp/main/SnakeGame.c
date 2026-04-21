@@ -188,7 +188,7 @@ Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}};
 int snakeLength = 1;
 Direction snakeDirection = LEFT;
 int64_t snakeUpdateTimer = 0;
-const int64_t snakeUpdateInterval = 500 * 1000;
+const int64_t snakeUpdateInterval = 300 * 1000;
 
 Cell food;
 
