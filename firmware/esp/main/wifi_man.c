@@ -50,9 +50,7 @@ void start_mdns_service()
         return;
     }
 
-    // set hostname
-    mdns_hostname_set("snake");
-    // set default instance
+    mdns_hostname_set("snake"); // todo: set via kconfig
     mdns_instance_name_set("Snake Game");
 }
 
@@ -143,7 +141,9 @@ void wifi_init_sta(char *ssid, char *pass)
     ESP_ERROR_CHECK(esp_netif_init());
 
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_sta();
+    esp_netif_t *netif = esp_netif_create_default_wifi_sta();
+
+    esp_netif_set_hostname(netif, "SnakeGame"); // todo: set via kconfig
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
