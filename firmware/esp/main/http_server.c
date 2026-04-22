@@ -1,3 +1,8 @@
+#include <esp_log.h>
+#include <sys/param.h>
+#include <esp_err.h>
+#include <esp_check.h>
+
 #include "http_server.h"
 
 #define TAG "http server"
@@ -115,6 +120,7 @@ esp_err_t home_redirect_handler(httpd_req_t *req, httpd_err_code_t err)
     return ESP_OK;
 }
 #pragma endregion
+
 
 httpd_handle_t start_webserver()
 {

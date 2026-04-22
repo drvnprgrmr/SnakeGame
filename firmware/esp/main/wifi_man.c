@@ -1,5 +1,25 @@
 #define WIFI_MAN
 
+#include <mdns.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_mac.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
+#include "esp_log.h"
+
+#include "lwip/err.h"
+#include "lwip/sys.h"
+#include "lwip/inet.h"
+
+#define AP_SSID "SnakeGame"
+#define AP_PASS "snakesss"
+#define AP_CHANNEL 1
+#define AP_MAX_STA_CONN 1
+
+// sta
+#define STA_MAX_RECONNECT 3
+
 #include "wifi_man.h"
 #include "dns_server.h"
 #include "nvs_helpers.h"
@@ -19,6 +39,22 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_FAIL_BIT BIT1
 
 static int s_retry_num = 0;
+
+void start_mdns_service()
+{
+    // initialize mDNS service
+    esp_err_t err = mdns_init();
+    if (err)
+    {
+        printf("MDNS Init failed: %d\n", err);
+        return;
+    }
+
+    // set hostname
+    mdns_hostname_set("snake");
+    // set default instance
+    mdns_instance_name_set("Snake Game");
+}
 
 void wifi_init_captive_mode()
 {
@@ -174,6 +210,8 @@ void wifi_init_sta(char *ssid, char *pass)
     {
         ESP_LOGE(TAG, "UNEXPECTED EVENT");
     }
+
+    start_mdns_service();
 }
 
 void wifi_init_softap(void)
