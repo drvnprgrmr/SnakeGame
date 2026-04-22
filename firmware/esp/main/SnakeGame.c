@@ -8,7 +8,7 @@
 #include "dot_matrix.h"
 
 #define TAG "snake"
-#define MAX_SNAKE_LENGTH (ROWS + COLS)
+#define MAX_SNAKE_LENGTH (((ROWS * COLS) - 2) / 2)
 
 extern QueueHandle_t serverQueue;
 
@@ -186,11 +186,46 @@ void updateLoadScreen()
 bool drawSnake = false;
 Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}};
 int snakeLength = 1;
-Direction snakeDirection = LEFT;
+Direction snakeDirection = RIGHT;
 int64_t snakeUpdateTimer = 0;
 const int64_t snakeUpdateInterval = 300 * 1000;
 
-Cell food;
+// Set food at the end corner of the matrix initially
+Cell food = {ROWS - 1, COLS - 1};
+
+void updateFood()
+{
+    bool spotFound = false;
+
+    while (!spotFound)
+    {
+        // choose random position for food
+        food.r = esp_random() % ROWS, food.c = esp_random() % COLS;
+
+        // check to ensure that cell isn't taken by a snake
+        spotFound = true;
+        for (int i = 0; i < snakeLength; i++)
+        {
+            // check if food is on the snake
+            if (food.r == snake[i].r && food.c == snake[i].c)
+            {
+                spotFound = false;
+                break;
+            }
+
+            // check if food is in the snake's immediate vicinity (i.e. one cell in any manhattan direction from the entire body)
+            if (
+                (food.r == ((snake[i].r + 1) % ROWS) && food.c == snake[i].c) ||        // check cell down
+                (food.r == ((snake[i].r - 1 + ROWS) % ROWS) && food.c == snake[i].c) || // check cell up
+                (food.r == snake[i].r && food.c == ((snake[i].c + 1) % COLS)) ||        // check cell right
+                (food.r == snake[i].r && food.c == ((snake[i].c - 1 + COLS) % COLS)))   // check cell left
+            {
+                spotFound = false;
+                break;
+            }
+        }
+    }
+}
 
 void printSnake()
 {
@@ -202,6 +237,21 @@ void printSnake()
     printf("\n");
 }
 
+void shiftSnake()
+{
+    // shift entire body to the neighbors position
+    for (int i = snakeLength - 1; i > 0; i--)
+    {
+        snake[i].r = snake[i - 1].r, snake[i].c = snake[i - 1].c;
+    }
+}
+
+void updateSnakeHead(Cell *head)
+{
+    // set new head
+    snake[0].r = head->r, snake[0].c = head->c;
+}
+
 void updateSnake()
 {
     if (esp_timer_get_time() - snakeUpdateTimer >= snakeUpdateInterval)
@@ -209,42 +259,37 @@ void updateSnake()
         // printSnake();
         snakeUpdateTimer = esp_timer_get_time();
 
-        // store previous head position
-        Cell previousHead;
-        previousHead.r = snake[0].r;
-        previousHead.c = snake[0].c;
+        // store head position
+        Cell head;
+        head.r = snake[0].r;
+        head.c = snake[0].c;
 
-        // shift entire body to the neighbors position
-        for (int i = snakeLength - 1; i > 0; i--)
-        {
-            snake[i].r = snake[i - 1].r, snake[i].c = snake[i - 1].c;
-        }
-
+        // calculate new head position based on direction
         switch (snakeDirection)
         {
         case RIGHT:
         {
             // move head to the right
-            snake[0].c = (previousHead.c + 1) % COLS;
+            head.c = (head.c + 1) % COLS;
         }
         break;
 
         case DOWN:
         {
             // move head down
-            snake[0].r = (previousHead.r + 1) % ROWS;
+            head.r = (head.r + 1) % ROWS;
         }
         break;
         case LEFT:
         {
             // move head to the left
-            snake[0].c = (previousHead.c + COLS - 1) % COLS;
+            head.c = (head.c + COLS - 1) % COLS;
         }
         break;
         case UP:
         {
             // move head up
-            snake[0].r = (previousHead.r + ROWS - 1) % ROWS;
+            head.r = (head.r + ROWS - 1) % ROWS;
         }
         break;
 
@@ -252,9 +297,38 @@ void updateSnake()
             break;
         }
 
+        // check if head is on the food
+        if (head.r == food.r && head.c == food.c)
+        {
+            if (++snakeLength == MAX_SNAKE_LENGTH)
+            {
+                // todo: win game
+                return;
+            }
+
+            // update snake
+            shiftSnake();
+            updateSnakeHead(&head);
+
+            // add new food
+            updateFood();
+        }
+        else
+        {
+            // just update snake
+            shiftSnake();
+            updateSnakeHead(&head);
+        }
+
         clearMatrix();
-        updateCells(snake, snakeLength, 1);
+
+        updateCell(&food, 1);               // draw food in the matrix
+        updateCells(snake, snakeLength, 1); // draw snake in the matrix
     }
+}
+
+void increaseSnake()
+{
 }
 
 int64_t randomUpdateTimer = 0;
