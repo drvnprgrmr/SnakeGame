@@ -4,15 +4,17 @@
 #include "wifi_man.h"
 #include "http_server.h"
 #include "nvs_helpers.h"
-
 #include "dot_matrix.h"
 
 #define TAG "snake"
-#define MAX_SNAKE_LENGTH (((ROWS * COLS) - 2) / 2)
+#define MAX_SNAKE_LENGTH ((ROWS * COLS) / 2) // limit the snake to half the real estate
 
 extern QueueHandle_t serverQueue;
 
 nvs_handle_t handle;
+
+void onWin(void);
+void onLose(void);
 
 typedef enum
 {
@@ -22,15 +24,8 @@ typedef enum
     UP,
 } Direction;
 
-typedef enum
-{
-    LOAD_SCREEN,
-    GAMEPLAY,
-    PAUSE
-} GameState;
-
 #pragma region // Load Screen
-// ===
+// TODO: Use #defines
 bool drawLoadScreen = true;
 const int MaxRightCol = COLS - 1;
 int currentRightColLimit = COLS - 1;
@@ -53,6 +48,8 @@ const int64_t loadScreenInterval = 70 * 1000; // 70ms
 
 void resetLoadScreen()
 {
+    drawLoadScreen = true;
+
     // reset direction
     currentDirection = RIGHT;
     // reset pointer
@@ -182,16 +179,30 @@ void updateLoadScreen()
 }
 #pragma endregion
 
-#pragma region // Snake and Food Logic
-bool drawSnake = false;
-Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}};
-int snakeLength = 1;
-Direction snakeDirection = RIGHT;
-int64_t snakeUpdateTimer = 0;
-const int64_t snakeUpdateInterval = 300 * 1000;
+#pragma region // Snake and Food Update Logic
+#define DRAW_SNAKE false
+#define SNAKE_LENGTH 1
+#define SNAKE_DIRECTION RIGHT
+#define SNAKE_UPDATE_TIMER 0
+#define SNAKE_UPDATE_INTERVAL 300LL * 1000LL
 
-// Set food at the end corner of the matrix initially
-Cell food = {ROWS - 1, COLS - 1};
+bool drawSnake = DRAW_SNAKE;
+Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}}; // maybe malloc instead at init?
+int snakeLength = SNAKE_LENGTH;
+Direction snakeDirection = SNAKE_DIRECTION;
+int64_t snakeUpdateTimer = SNAKE_UPDATE_TIMER;
+
+Cell food = {ROWS - 1, COLS - 1}; // Set food at the end corner of the matrix initially
+
+void resetSnake()
+{
+    drawSnake = DRAW_SNAKE;
+    snake[0].r = 0, snake[0].c = 0;
+    snakeLength = 1;
+    snakeDirection = SNAKE_DIRECTION;
+    snakeUpdateTimer = 0;
+    food.r = ROWS - 1, food.c = COLS - 1;
+}
 
 void updateFood()
 {
@@ -252,9 +263,9 @@ void updateSnakeHead(Cell *head)
     snake[0].r = head->r, snake[0].c = head->c;
 }
 
-void updateSnake()
+void updateGame()
 {
-    if (esp_timer_get_time() - snakeUpdateTimer >= snakeUpdateInterval)
+    if (esp_timer_get_time() - snakeUpdateTimer >= SNAKE_UPDATE_INTERVAL)
     {
         // printSnake();
         snakeUpdateTimer = esp_timer_get_time();
@@ -302,7 +313,7 @@ void updateSnake()
         {
             if (++snakeLength == MAX_SNAKE_LENGTH)
             {
-                // todo: win game
+                onWin(); // congrats! you won.
                 return;
             }
 
@@ -327,82 +338,86 @@ void updateSnake()
     }
 }
 
-void increaseSnake()
-{
-}
+#pragma endregion
 
-int64_t randomUpdateTimer = 0;
-static const int64_t randomUpdateInterval = 5 * 1000 * 1000;
-void randomUpdateSnakeDirection()
+#pragma region // Gamesore and win or loose logic
+void checkSnakeCollision()
 {
-    if (esp_timer_get_time() - randomUpdateTimer >= randomUpdateInterval)
+    bool collided = false;
+    for (uint i = 0; i < snakeLength - 1; i++)
     {
-        randomUpdateTimer = esp_timer_get_time();
-
-        // get random integer
-        int32_t rand = esp_random() % 4; // one of the four directions
-
-        switch (rand)
-        {
-        case RIGHT:
-        {
-            // make sure you can't turn 180deg
-            if (currentDirection == LEFT)
-            {
-                currentDirection = DOWN;
-            }
-            else
-            {
-                currentDirection = rand;
-            }
-        }
-        break;
-        case DOWN:
-        {
-            // make sure you can't turn 180deg
-            if (currentDirection == UP)
-            {
-                currentDirection = LEFT;
-            }
-            else
-            {
-                currentDirection = rand;
-            }
-        }
-        break;
-        case LEFT:
-        {
-            // make sure you can't turn 180deg
-            if (currentDirection == RIGHT)
-            {
-                currentDirection = UP;
-            }
-            else
-            {
-                currentDirection = rand;
-            }
-        }
-        break;
-        case UP:
-        {
-            // make sure you can't turn 180deg
-            if (currentDirection == DOWN)
-            {
-                currentDirection = LEFT;
-            }
-            else
-            {
-                currentDirection = rand;
-            }
-        }
-        break;
-
-        default:
+        if (collided)
             break;
+        for (uint j = i + 1; j < snakeLength; j++)
+        {
+            // check if the two cells have the same value
+            if (snake[i].r == snake[j].r && snake[i].c == snake[j].c)
+            {
+                onLose();
+
+                collided = true;
+                break;
+            }
         }
     }
 }
-#pragma endregion
+
+void revealScore()
+{
+    clearMatrix();
+
+    uint mark = 0;
+    for (int r = 0; r < ROWS; r++)
+    {
+        if (mark == snakeLength)
+        {
+            break;
+        }
+        for (int c = 0; c < COLS; c++)
+        {
+            Cell cell = {r, c};
+            updateCell(&cell, 1);
+
+            if (++mark == snakeLength)
+            {
+                break;
+            }
+        }
+    }
+
+    uint64_t timer = esp_timer_get_time();
+    uint64_t timeout = 5 * 1000 * 1000;
+
+    // show score by turning on corresponding dots in the matrix
+    // todo: play buzzer tone
+    while (esp_timer_get_time() - timer < timeout)
+    {
+        drawMatrix();
+        vTaskDelay(1);
+    }
+
+    clearMatrix();
+}
+
+void resetGame()
+{
+    resetLoadScreen(); // reset load screen variables
+    resetSnake();
+}
+
+void onWin()
+{
+    revealScore();
+    resetGame();
+}
+
+void onLose()
+{
+    revealScore();
+    resetGame();
+}
+
+#pragma endregion // Gamesore and win or loose logic
 
 #pragma region // HTTP server data manage
 
@@ -438,6 +453,7 @@ void handle_server_data()
     }
     else if (strcmp(ctx, "start") == 0)
     {
+        resetLoadScreen();
         drawLoadScreen = false;
         drawSnake = true;
     }
@@ -478,13 +494,6 @@ void handle_server_data()
 void app_main(void)
 {
     // esp_log_level_set("*", ESP_LOG_DEBUG);
-    /*
-        Turn of warnings from HTTP server as redirecting traffic will yield
-        lots of invalid requests
-    */
-    esp_log_level_set("httpd_uri", ESP_LOG_ERROR);
-    esp_log_level_set("httpd_txrx", ESP_LOG_ERROR);
-    esp_log_level_set("httpd_parse", ESP_LOG_ERROR);
 
     initMatrixPins(0);
 
@@ -501,10 +510,10 @@ void app_main(void)
         {
             updateLoadScreen();
         }
-        if (drawSnake)
+        else if (drawSnake)
         {
-            updateSnake();
-            // randomUpdateSnakeDirection();
+            updateGame();
+            checkSnakeCollision();
         }
 
         // handle data gotten from the server

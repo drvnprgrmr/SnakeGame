@@ -7,14 +7,9 @@
 #include <freertos/task.h>
 #include <freertos/timers.h>
 
+// todo: use kconfig
 #define ROWS 8
 #define COLS 8
-
-extern gpio_num_t allPins[ROWS + COLS];
-
-extern gpio_num_t rowPins[ROWS];
-extern gpio_num_t colPins[COLS];
-
 
 typedef struct
 {

@@ -142,6 +142,14 @@ void register_softap_uris(httpd_handle_t server)
 {
     ESP_LOGI(TAG, "Registering URI handlers for softAP mode.");
 
+    /*
+        Turn of warnings from HTTP server as redirecting traffic will yield
+        lots of invalid requests
+    */
+    esp_log_level_set("httpd_uri", ESP_LOG_ERROR);
+    esp_log_level_set("httpd_txrx", ESP_LOG_ERROR);
+    esp_log_level_set("httpd_parse", ESP_LOG_ERROR);
+
     httpd_uri_t softap_captive = {
         .uri = "/",
         .method = HTTP_GET,

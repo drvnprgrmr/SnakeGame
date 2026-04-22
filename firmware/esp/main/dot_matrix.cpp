@@ -2,6 +2,8 @@
 
 #define TAG "dot_matrix"
 
+#define MATRIX_UPDATE_INTERVAL 500UL // microseconds
+
 gpio_num_t allPins[ROWS + COLS] = {
     // Top
     GPIO_NUM_13, // col 8
@@ -29,7 +31,7 @@ gpio_num_t colPins[COLS] = {allPins[3], allPins[10], allPins[11], allPins[6], al
 
 bool matrix[ROWS][COLS];
 
-void initMatrixPins(int state = 0)
+void initMatrixPins(int state)
 {
     for (int i = 0; i < ROWS + COLS; i++)
     {
@@ -41,7 +43,7 @@ void initMatrixPins(int state = 0)
 void scanMatrix()
 {
     // Round 1: Set all pins low then trigger individual pins high
-    initMatrixPins();
+    initMatrixPins(0);
     for (int i = 0; i < ROWS + COLS; i++)
     {
         gpio_set_level(allPins[i], 1);
@@ -173,7 +175,7 @@ void drawMatrix()
             }
         }
 
-        ets_delay_us(500); // might need to update to non-blocking solution later when adding wifi
+        ets_delay_us(MATRIX_UPDATE_INTERVAL); // yeah, seems more trouble than is worth for now
         gpio_set_level(rowPins[r], 1);
     }
 }
