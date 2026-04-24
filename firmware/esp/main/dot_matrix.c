@@ -4,7 +4,7 @@
 
 #define MATRIX_UPDATE_INTERVAL 500UL // microseconds
 
-gpio_num_t allPins[ROWS + COLS] = {
+const gpio_num_t allPins[ROWS + COLS] = {
     // Top
     GPIO_NUM_13, // col 8
     GPIO_NUM_12, // col 7
@@ -26,8 +26,8 @@ gpio_num_t allPins[ROWS + COLS] = {
 };
 
 // Run scanMatrix to figure these out
-gpio_num_t rowPins[ROWS] = {allPins[7], allPins[2], allPins[15], allPins[4], allPins[8], allPins[14], allPins[9], allPins[12]};
-gpio_num_t colPins[COLS] = {allPins[3], allPins[10], allPins[11], allPins[6], allPins[13], allPins[5], allPins[1], allPins[0]};
+const gpio_num_t rowPins[ROWS] = {allPins[7], allPins[2], allPins[15], allPins[4], allPins[8], allPins[14], allPins[9], allPins[12]};
+const gpio_num_t colPins[COLS] = {allPins[3], allPins[10], allPins[11], allPins[6], allPins[13], allPins[5], allPins[1], allPins[0]};
 
 bool matrix[ROWS][COLS];
 
