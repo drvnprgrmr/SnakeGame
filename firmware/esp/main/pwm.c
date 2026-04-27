@@ -2,12 +2,13 @@
 
 #include <esp_err.h>
 #include <math.h>
+#include <esp_intr_alloc.h>
 
 #define LEDC_MODE LEDC_HIGH_SPEED_MODE
 #define LEDC_TIMER LEDC_TIMER_0
 #define LEDC_CLK_SRC LEDC_REF_TICK
-#define LEDC_DUTY_RES LEDC_TIMER_7_BIT // duty resolution
-#define LEDC_FREQ (20U * 1000U)        // 20 KHz default (max human hearing range)
+#define LEDC_DUTY_RES LEDC_TIMER_3_BIT // duty resolution
+#define LEDC_FREQ (10 * 1000U)
 
 #define LEDC_CHANNEL LEDC_CHANNEL_0 // todo: pick a new channel up to the maximum each time init is called
 
@@ -30,7 +31,8 @@ ledc_channel_t pwm_init(gpio_num_t pin)
         .duty = 0,   // start at 0%
         .hpoint = 0, // no phase shift
     };
-    ESP_ERROR_CHECK(ledc_channel_config(&channel_config));    // configure channel
+    ESP_ERROR_CHECK(ledc_channel_config(&channel_config)); // configure channel
+    ledc_fade_func_install(ESP_INTR_FLAG_LOWMED);
 
     return LEDC_CHANNEL;
 }

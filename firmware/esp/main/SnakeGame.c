@@ -5,9 +5,15 @@
 #include "http_server.h"
 #include "nvs_helpers.h"
 #include "dot_matrix.h"
+#include "buzzer.h"
 
 #define TAG "snake"
 #define MAX_SNAKE_LENGTH ((ROWS * COLS) / 2) // limit the snake to half the real estate
+
+Note start_note = {
+    .tone = T_C4,
+    .duration = 2 * 1000,
+};
 
 extern QueueHandle_t serverQueue;
 
@@ -495,6 +501,11 @@ void app_main(void)
 {
     // esp_log_level_set("*", ESP_LOG_DEBUG);
 
+    // init buzzer
+    buzzer_init(GPIO_NUM_22);
+    buzzer_play(&start_note);
+
+    // init dot matrix
     initMatrixPins(0);
 
     // init NVS

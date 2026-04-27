@@ -2,8 +2,6 @@
 
 #define TAG "dot_matrix"
 
-#define MATRIX_UPDATE_INTERVAL 500UL // microseconds
-
 const gpio_num_t allPins[ROWS + COLS] = {
     // Top
     GPIO_NUM_13, // col 8
@@ -175,7 +173,8 @@ void drawMatrix()
             }
         }
 
-        ets_delay_us(MATRIX_UPDATE_INTERVAL); // yeah, seems more trouble than is worth for now
+        ets_delay_us(450); // delay before for persistence of vision
         gpio_set_level(rowPins[r], 1);
+        ets_delay_us(50); // delay after to allow LEDs to fully turn off (I think)
     }
 }
