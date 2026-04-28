@@ -10,11 +10,15 @@
 
 static ledc_channel_t buzzer_channel;
 
+Note *melody_ptr;
+uint8_t melody_idx = 0;
+uint8_t melody_length = 1;
+
 static gptimer_handle_t gptimer = NULL;
 static gptimer_config_t timer_config = {
-    .clk_src = GPTIMER_CLK_SRC_DEFAULT, // Select the default clock source
-    .direction = GPTIMER_COUNT_UP,      // Counting direction is up
-    .resolution_hz = 1UL * 1000UL * 1000UL,          // Resolution is 1 KHz, i.e., 1 tick equals 1 millisecond
+    .clk_src = GPTIMER_CLK_SRC_DEFAULT,     // Select the default clock source
+    .direction = GPTIMER_COUNT_UP,          // Counting direction is up
+    .resolution_hz = 1UL * 1000UL * 1000UL, // Resolution is 1 KHz, i.e., 1 tick equals 1 millisecond
 };
 
 static bool stop_buzzer(gptimer_handle_t timer, const gptimer_alarm_event_data_t *edata, void *user_ctx)
@@ -27,7 +31,20 @@ static bool stop_buzzer(gptimer_handle_t timer, const gptimer_alarm_event_data_t
     // 2. Get alarm event data from edata, such as edata->count_value
     // 3. Perform user-defined operations
     // -> update pwm duty cycle to 0 to turn off the buzzer
-    update_pwm_duty(buzzer_channel, 0);
+    if (melody_idx == melody_length - 1)
+    {
+        // stop playing sound
+        update_pwm_duty(buzzer_channel, 0);
+
+        // reset the melody idx and length
+        melody_idx = 0;
+        melody_length = 1;
+    }
+    else
+    {
+        // play next note in the melody
+        buzzer_play(&melody_ptr[++melody_idx]);
+    }
     // 4. Return whether a hgh-priority task was awakened during the above operations to notify the scheduler to switch tasks
     return false;
 }
@@ -35,7 +52,6 @@ static bool stop_buzzer(gptimer_handle_t timer, const gptimer_alarm_event_data_t
 static gptimer_event_callbacks_t cbs = {
     .on_alarm = stop_buzzer, // Call the user callback function when the alarm event occurs
 };
-
 
 void buzzer_init(gpio_num_t pin) // todo: make to run in its own task
 {
@@ -71,4 +87,14 @@ void buzzer_play(Note *note)
 
     // Update the timer's alarm action
     ESP_ERROR_CHECK(gptimer_set_alarm_action(gptimer, &alarm_config));
+}
+
+void buzzer_play_melody(Note *melody, uint8_t length)
+{
+    melody_ptr = melody;
+    melody_idx = 0;
+    melody_length =  length;
+
+    // play the first melody
+    buzzer_play(melody);
 }

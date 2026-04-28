@@ -15,6 +15,20 @@ Note start_note = {
     .duration = 2 * 1000,
 };
 
+Note eat_melody[4] = {
+    {T_C5, 100}, // Start mid
+    {T_E5, 100}, // Up
+    {T_G5, 100}, // Up
+    {T_C6, 250}  // High note, held longer
+};
+
+Note lose_melody[4] = {
+    {T_G3, 300},  // Start low
+    {T_FS3, 300}, // Down a semi-tone
+    {T_F3, 300},  // Down a semi-tone
+    {T_E3, 600}   // End on a long, low note
+};
+
 extern QueueHandle_t serverQueue;
 
 nvs_handle_t handle;
@@ -242,6 +256,9 @@ void updateFood()
             }
         }
     }
+
+    // play eat melody after eating food
+    buzzer_play_melody(eat_melody, 4);
 }
 
 void printSnake()
@@ -421,6 +438,9 @@ void onLose()
 {
     revealScore();
     resetGame();
+
+    // play lose melody
+    buzzer_play_melody(lose_melody, 4);
 }
 
 #pragma endregion // Gamesore and win or loose logic

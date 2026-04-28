@@ -121,3 +121,4 @@ typedef struct
 
 void buzzer_init(gpio_num_t pin);
 void buzzer_play(Note *note);
+void buzzer_play_melody(Note *melody, uint8_t length);
