@@ -206,6 +206,8 @@ void updateLoadScreen()
 #define SNAKE_UPDATE_TIMER 0
 #define SNAKE_UPDATE_INTERVAL 300LL * 1000LL
 
+// TODO: Implement shutdown (via wifi in this instance) and implement deinit of modules
+
 bool drawSnake = DRAW_SNAKE;
 Cell snake[MAX_SNAKE_LENGTH] = {{0, 0}}; // maybe malloc instead at init?
 int snakeLength = SNAKE_LENGTH;
@@ -436,11 +438,11 @@ void onWin()
 
 void onLose()
 {
-    revealScore();
-    resetGame();
-
     // play lose melody
     buzzer_play_melody(lose_melody, 4);
+
+    revealScore();
+    resetGame();
 }
 
 #pragma endregion // Gamesore and win or loose logic
