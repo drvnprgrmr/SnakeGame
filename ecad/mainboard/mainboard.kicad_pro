@@ -416,7 +416,7 @@
         "uuid": "daa70da3-6ce4-4871-9367-b401b0239362"
       }
     ],
-    "used_designators": "SW1-2,R1-8,BZ1,#PWR1-6,J1-9",
+    "used_designators": "#FLG1-3,U1,SW1-2,R1-19,BZ1,#PWR1-9,J1-9",
     "variants": []
   },
   "sheets": [
@@ -425,7 +425,9 @@
       "Root"
     ]
   ],
-  "text_variables": {},
+  "text_variables": {
+    "dm_resistor": "150"
+  },
   "tuning_profiles": {
     "meta": {
       "version": 0
