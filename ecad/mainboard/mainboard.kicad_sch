@@ -4571,7 +4571,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 127.254 90)
 			(hide yes)
 			(show_name no)
@@ -4640,17 +4640,17 @@
 				)
 			)
 		)
-		(property "Value" "Dot Matrix Side B"
+		(property "Value" "Dot Matrix Side B (F)"
 			(at 151.765 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 152.4 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -4816,17 +4816,17 @@
 				)
 			)
 		)
-		(property "Value" "Dot Matrix Side B"
+		(property "Value" "Dot Matrix Side B (M)"
 			(at 132.715 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
 			(at 132.08 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -5001,7 +5001,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 120.904 90)
 			(hide yes)
 			(show_name no)
@@ -5070,17 +5070,17 @@
 				)
 			)
 		)
-		(property "Value" "Dot Matrix Side A"
+		(property "Value" "Dot Matrix Side A (F)"
 			(at 108.585 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 109.22 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -5177,7 +5177,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 141.224 90)
 			(hide yes)
 			(show_name no)
@@ -5259,7 +5259,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 27.686 98.044 90)
 			(hide yes)
 			(show_name no)
@@ -5338,7 +5338,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 114.554 90)
 			(hide yes)
 			(show_name no)
@@ -5417,7 +5417,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 101.854 90)
 			(hide yes)
 			(show_name no)
@@ -5574,7 +5574,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 95.504 90)
 			(hide yes)
 			(show_name no)
@@ -5653,7 +5653,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 114.554 90)
 			(hide yes)
 			(show_name no)
@@ -5734,7 +5734,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 27.94 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -5831,7 +5831,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 141.224 90)
 			(hide yes)
 			(show_name no)
@@ -5910,7 +5910,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 133.604 90)
 			(hide yes)
 			(show_name no)
@@ -5989,7 +5989,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 108.204 90)
 			(hide yes)
 			(show_name no)
@@ -6059,17 +6059,17 @@
 				)
 			)
 		)
-		(property "Value" "Dot Matrix Side A"
+		(property "Value" "Dot Matrix Side A (M)"
 			(at 89.535 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
 				(font
-					(size 1.27 1.27)
+					(size 1.016 1.016)
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
 			(at 88.9 74.93 0)
 			(hide yes)
 			(show_name no)
@@ -6314,7 +6314,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 95.504 90)
 			(hide yes)
 			(show_name no)
@@ -6709,7 +6709,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 39.116 98.044 90)
 			(hide yes)
 			(show_name no)
@@ -6789,7 +6789,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 224.79 59.69 0)
 			(hide yes)
 			(show_name no)
@@ -7058,7 +7058,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 108.204 90)
 			(hide yes)
 			(show_name no)
@@ -7137,7 +7137,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 120.904 90)
 			(hide yes)
 			(show_name no)
@@ -7219,7 +7219,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Buzzer_Beeper:Buzzer_12x9.5RM7.6"
 			(at 26.035 170.18 90)
 			(hide yes)
 			(show_name no)
@@ -7300,7 +7300,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 58.42 35.56 0)
 			(hide yes)
 			(show_name no)
@@ -7478,7 +7478,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 178.816 108.204 90)
 			(hide yes)
 			(show_name no)
@@ -7557,7 +7557,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 101.854 90)
 			(hide yes)
 			(show_name no)
@@ -7714,7 +7714,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 100.584 133.604 90)
 			(hide yes)
 			(show_name no)
@@ -7793,7 +7793,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 143.764 127.254 90)
 			(hide yes)
 			(show_name no)
@@ -7873,7 +7873,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
 			(at 260.35 59.69 0)
 			(hide yes)
 			(show_name no)
