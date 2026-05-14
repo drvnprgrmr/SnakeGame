@@ -1085,7 +1085,7 @@
 		(at 120.65 64.262 -90)
 		(descr "Through hole straight socket strip, 1x08, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x08 2.54mm single row")
-		(property "Reference" "J3"
+		(property "Reference" "J2"
 			(at 0 -2.7939 180)
 			(layer "F.SilkS")
 			(uuid "a4d9ceb6-2936-437f-81ab-282c52436ab4")
@@ -2360,7 +2360,7 @@
 		(at 59.68 60.34)
 		(descr "Through hole straight socket strip, 1x08, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x08 2.54mm single row")
-		(property "Reference" "J8"
+		(property "Reference" "J7"
 			(at 0 -2.77 0)
 			(layer "F.SilkS")
 			(uuid "9e94817c-7ddc-4be1-ac0e-1e87a337826e")
@@ -3012,7 +3012,7 @@
 		(at 120.6499 92.662 -90)
 		(descr "Through hole straight socket strip, 1x08, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x08 2.54mm single row")
-		(property "Reference" "J4"
+		(property "Reference" "J3"
 			(at 0 -2.794 180)
 			(layer "F.SilkS")
 			(uuid "126b524f-9fa0-41f9-a880-17d0cc4e2371")
@@ -5142,7 +5142,7 @@
 		(at 120.6499 97.162 -90)
 		(descr "Through hole straight pin header, 1x08, 2.54mm pitch, single row")
 		(tags "Through hole pin header THT 1x08 2.54mm single row")
-		(property "Reference" "J2"
+		(property "Reference" "J4"
 			(at -0.002 -2.794 180)
 			(layer "F.SilkS")
 			(uuid "52e750c1-cf7b-45a5-95fb-b65c9eff8488")
@@ -5449,7 +5449,7 @@
 		(at 64.27 60.34)
 		(descr "Through hole straight socket strip, 1x08, 2.54mm pitch, single row (from Kicad 4.0.7), script generated")
 		(tags "Through hole socket strip THT 1x08 2.54mm single row")
-		(property "Reference" "J9"
+		(property "Reference" "J8"
 			(at 0 -2.77 0)
 			(layer "F.SilkS")
 			(uuid "9c566f6b-5c3a-486f-9a21-33d029588187")

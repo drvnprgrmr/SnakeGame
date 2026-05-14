@@ -2463,7 +2463,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 67.31) (xy 147.32 67.31)
+			(xy 147.32 67.31) (xy 137.16 67.31)
 		)
 		(stroke
 			(width 0)
@@ -2553,7 +2553,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 74.93) (xy 147.32 74.93)
+			(xy 147.32 74.93) (xy 137.16 74.93)
 		)
 		(stroke
 			(width 0)
@@ -2643,7 +2643,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 77.47) (xy 147.32 77.47)
+			(xy 147.32 77.47) (xy 137.16 77.47)
 		)
 		(stroke
 			(width 0)
@@ -2833,7 +2833,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 85.09) (xy 147.32 85.09)
+			(xy 147.32 85.09) (xy 137.16 85.09)
 		)
 		(stroke
 			(width 0)
@@ -2943,7 +2943,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 82.55) (xy 147.32 82.55)
+			(xy 147.32 82.55) (xy 137.16 82.55)
 		)
 		(stroke
 			(width 0)
@@ -3023,7 +3023,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 72.39) (xy 147.32 72.39)
+			(xy 147.32 72.39) (xy 137.16 72.39)
 		)
 		(stroke
 			(width 0)
@@ -3493,7 +3493,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 69.85) (xy 147.32 69.85)
+			(xy 147.32 69.85) (xy 137.16 69.85)
 		)
 		(stroke
 			(width 0)
@@ -3503,7 +3503,7 @@
 	)
 	(wire
 		(pts
-			(xy 137.16 80.01) (xy 147.32 80.01)
+			(xy 147.32 80.01) (xy 137.16 80.01)
 		)
 		(stroke
 			(width 0)
@@ -3572,12 +3572,12 @@
 		(uuid "0f3a6842-ed28-4033-96d4-2b96b05fd175")
 	)
 	(label "DM_B2"
-		(at 140.97 69.85 0)
+		(at 143.51 69.85 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "1111c55b-3d74-4f6c-9c4c-e6d0f6733418")
 	)
@@ -3592,22 +3592,22 @@
 		(uuid "1135aec3-38af-4d28-9198-2eea190ceda3")
 	)
 	(label "DM_B6"
-		(at 140.97 80.01 0)
+		(at 143.51 80.01 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "1178aa8d-7c53-4f3a-a350-403477586cfa")
 	)
 	(label "DM_B8"
-		(at 140.97 85.09 0)
+		(at 143.51 85.09 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "1942a953-d21c-4570-97d4-d78e96a5557c")
 	)
@@ -3822,12 +3822,12 @@
 		(uuid "484dc037-100c-4e61-b16c-09b4aa4d1278")
 	)
 	(label "DM_B3"
-		(at 140.97 72.39 0)
+		(at 143.51 72.39 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "4a8f7b85-b251-4b37-8e49-a2d6da0cce5d")
 	)
@@ -3842,12 +3842,12 @@
 		(uuid "4d5c0e7e-7494-418b-8af3-ac93d042fe30")
 	)
 	(label "DM_B4"
-		(at 140.97 74.93 0)
+		(at 143.51 74.93 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "4e355bd9-3f0f-4373-b420-28470f3107ce")
 	)
@@ -4102,12 +4102,12 @@
 		(uuid "ad6088a3-ba6f-4166-9749-192378d734f1")
 	)
 	(label "DM_B1"
-		(at 140.97 67.31 0)
+		(at 143.51 67.31 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "b178946a-64e4-43e5-a71c-d0509cd435db")
 	)
@@ -4272,12 +4272,12 @@
 		(uuid "d579eb0e-bb4d-43ad-8d1f-1c9f09a4edb6")
 	)
 	(label "DM_B7"
-		(at 140.97 82.55 0)
+		(at 143.51 82.55 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "d80fd6df-d830-4074-84e4-822d60bf0592")
 	)
@@ -4302,12 +4302,12 @@
 		(uuid "dff7aede-8ba5-484f-b887-887a8c39cef9")
 	)
 	(label "DM_B5"
-		(at 140.97 77.47 0)
+		(at 143.51 77.47 180)
 		(effects
 			(font
 				(size 0.762 0.762)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "e16ccd73-a916-44ef-be9f-8eeb911fb9a8")
 	)
@@ -4621,7 +4621,8 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x08_Socket")
-		(at 152.4 74.93 0)
+		(at 132.08 74.93 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4630,8 +4631,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1335e388-d23c-4d68-adb8-6d7074bea01d")
-		(property "Reference" "J4"
-			(at 151.765 62.23 0)
+		(property "Reference" "J3"
+			(at 132.715 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4641,7 +4642,7 @@
 			)
 		)
 		(property "Value" "Dot Matrix Side B (F)"
-			(at 151.765 64.77 0)
+			(at 132.715 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4651,7 +4652,7 @@
 			)
 		)
 		(property "Footprint" "Connector_PinSocket_2.54mm:PinSocket_1x08_P2.54mm_Vertical"
-			(at 152.4 74.93 0)
+			(at 132.08 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4662,7 +4663,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 152.4 74.93 0)
+			(at 132.08 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4673,7 +4674,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x08, script generated"
-			(at 152.4 74.93 0)
+			(at 132.08 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4710,7 +4711,7 @@
 		(instances
 			(project "mainboard"
 				(path "/daa70da3-6ce4-4871-9367-b401b0239362"
-					(reference "J4")
+					(reference "J3")
 					(unit 1)
 				)
 			)
@@ -4796,7 +4797,8 @@
 	)
 	(symbol
 		(lib_id "Connector:Conn_01x08_Pin")
-		(at 132.08 74.93 0)
+		(at 152.4 74.93 0)
+		(mirror y)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -4806,8 +4808,8 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "18f98da7-c3e4-48f0-acd0-024cd5d5aaed")
-		(property "Reference" "J2"
-			(at 132.715 62.23 0)
+		(property "Reference" "J4"
+			(at 151.765 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4817,7 +4819,7 @@
 			)
 		)
 		(property "Value" "Dot Matrix Side B (M)"
-			(at 132.715 64.77 0)
+			(at 151.765 64.77 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -4827,7 +4829,7 @@
 			)
 		)
 		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Vertical"
-			(at 132.08 74.93 0)
+			(at 152.4 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4838,7 +4840,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 132.08 74.93 0)
+			(at 152.4 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4849,7 +4851,7 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x08, script generated"
-			(at 132.08 74.93 0)
+			(at 152.4 74.93 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -4886,7 +4888,7 @@
 		(instances
 			(project "mainboard"
 				(path "/daa70da3-6ce4-4871-9367-b401b0239362"
-					(reference "J2")
+					(reference "J4")
 					(unit 1)
 				)
 			)
@@ -5060,7 +5062,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "1d803422-2630-4126-9d48-3f2eaf923761")
-		(property "Reference" "J3"
+		(property "Reference" "J2"
 			(at 108.585 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -5140,7 +5142,7 @@
 		(instances
 			(project "mainboard"
 				(path "/daa70da3-6ce4-4871-9367-b401b0239362"
-					(reference "J3")
+					(reference "J2")
 					(unit 1)
 				)
 			)
@@ -6769,7 +6771,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "95bdec37-5d4e-4d79-a8cd-642057dbe5d3")
-		(property "Reference" "J8"
+		(property "Reference" "J7"
 			(at 224.79 46.736 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6849,7 +6851,7 @@
 		(instances
 			(project "mainboard"
 				(path "/daa70da3-6ce4-4871-9367-b401b0239362"
-					(reference "J8")
+					(reference "J7")
 					(unit 1)
 				)
 			)
@@ -7853,7 +7855,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f3f9d229-7576-4cad-b419-c4a0de95c50f")
-		(property "Reference" "J9"
+		(property "Reference" "J8"
 			(at 261.112 47.244 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7933,7 +7935,7 @@
 		(instances
 			(project "mainboard"
 				(path "/daa70da3-6ce4-4871-9367-b401b0239362"
-					(reference "J9")
+					(reference "J8")
 					(unit 1)
 				)
 			)
